@@ -13,16 +13,13 @@ const logQueue = new Queue('log-processing', {
   }
 });
 
-// Batch processing configuration
-const BATCH_SIZE = 50; // Process 50 logs at once
-const BATCH_TIMEOUT = 1000; // Or after 1 second
-let logBatch = [];
-let batchTimer = null;
-
 // Process logs in batches for better performance
 async function processBatch(logs) {
   try {
-    if (logs.length === 0) return;
+    if (!logs || logs.length === 0) {
+      console.log('⚠️ Empty batch received, skipping...');
+      return [];
+    }
     
     // Bulk insert into MongoDB (MUCH faster than one-by-one)
     const result = await Log.insertMany(logs, { ordered: false });
@@ -47,46 +44,33 @@ async function processBatch(logs) {
   }
 }
 
-// Add log to batch
-function addToBatch(logData) {
-  logBatch.push(logData);
-  
-  // If batch is full, process immediately
-  if (logBatch.length >= BATCH_SIZE) {
-    clearTimeout(batchTimer);
-    flushBatch();
-  } else {
-    // Otherwise, wait for timeout
-    if (!batchTimer) {
-      batchTimer = setTimeout(flushBatch, BATCH_TIMEOUT);
-    }
-  }
-}
-
-// Flush the current batch
-async function flushBatch() {
-  if (logBatch.length === 0) return;
-  
-  const currentBatch = [...logBatch];
-  logBatch = [];
-  batchTimer = null;
-  
-  await processBatch(currentBatch);
-}
-
-// Define queue processor
+// Define queue processor - UPDATED to handle both single logs and batches
 logQueue.process(async (job) => {
-  const { logData } = job.data;
+  const { logData, logs } = job.data;
   
-  // Add to batch instead of direct insert
-  addToBatch(logData);
+  // Handle batch processing (from /api/logs/batch endpoint)
+  if (logs && Array.isArray(logs)) {
+    console.log(`📦 Processing batch of ${logs.length} logs`);
+    await processBatch(logs);
+    return { success: true, message: `Batch of ${logs.length} logs processed` };
+  }
   
-  return { success: true, message: 'Log queued for batch processing' };
+  // Handle single log processing (from /api/logs endpoint)
+  if (logData) {
+    console.log(`📄 Processing single log: ${logData.level} - ${logData.message}`);
+    await processBatch([logData]); // Process as batch of 1
+    return { success: true, message: 'Single log processed' };
+  }
+  
+  // If neither format is found
+  console.error('❌ Invalid job data format:', job.data);
+  throw new Error('Invalid job data format');
 });
 
 // Queue event listeners
 logQueue.on('completed', (job, result) => {
-  // Silent success (too many logs to print each one)
+  // Log completion for debugging
+  console.log(`✅ Job ${job.id} completed: ${result.message}`);
 });
 
 logQueue.on('failed', (job, err) => {
@@ -97,26 +81,21 @@ logQueue.on('error', (error) => {
   console.error('❌ Queue error:', error);
 });
 
-// Graceful shutdown - flush remaining logs
+logQueue.on('stalled', (job) => {
+  console.warn(`⚠️ Job ${job.id} stalled, will be retried`);
+});
+
+// Graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('🛑 Shutting down gracefully...');
-  await flushBatch();
+  console.log('🛑 Shutting down queue gracefully...');
   await logQueue.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.log('🛑 Shutting down gracefully...');
-  await flushBatch();
+  console.log('🛑 Shutting down queue gracefully...');
   await logQueue.close();
   process.exit(0);
 });
 
-// Periodic flush (every 2 seconds) to ensure no logs stuck
-setInterval(() => {
-  if (logBatch.length > 0) {
-    flushBatch();
-  }
-}, 2000);
-
-module.exports = { logQueue, addToBatch, flushBatch };
+module.exports = { logQueue };

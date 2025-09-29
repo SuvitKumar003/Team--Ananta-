@@ -1,9 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const axios = require('axios'); // Add this dependency
 
 const app = express();
 const PORT = 3001;
+
+// Backend URL where logs will be sent
+const LOG_BACKEND_URL = 'http://localhost:5000/api/logs';
+const BATCH_LOG_URL = 'http://localhost:5000/api/logs/batch';
 
 // Middleware
 app.use(cors());
@@ -22,8 +27,14 @@ const mockEvents = [
 const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata', 'Hyderabad'];
 const userNames = ['Arjun', 'Priya', 'Rahul', 'Sneha', 'Vikram', 'Anita', 'Rohit', 'Kavya'];
 
-// Enhanced logging function
-function createLog(level, message, details = {}) {
+// Batch logging for better performance
+let logBatch = [];
+const BATCH_SIZE = 20; // Send 20 logs at once
+const BATCH_TIMEOUT = 2000; // Or send after 2 seconds
+let batchTimer = null;
+
+// Enhanced logging function - now sends to backend
+async function createLog(level, message, details = {}) {
   const log = {
     timestamp: new Date().toISOString(),
     level: level,
@@ -37,11 +48,73 @@ function createLog(level, message, details = {}) {
     ...details
   };
   
-  console.log(JSON.stringify(log, null, 2));
+  // Still log to console for debugging
+  console.log(`📊 ${level}: ${message}`);
+  
+  // Add to batch for sending to backend
+  addLogToBatch(log);
+  
   return log;
 }
 
-// All simulation functions defined first
+// Add log to batch
+function addLogToBatch(logData) {
+  logBatch.push(logData);
+  
+  // If batch is full, send immediately
+  if (logBatch.length >= BATCH_SIZE) {
+    clearTimeout(batchTimer);
+    sendLogBatch();
+  } else {
+    // Otherwise, wait for timeout
+    if (!batchTimer) {
+      batchTimer = setTimeout(sendLogBatch, BATCH_TIMEOUT);
+    }
+  }
+}
+
+// Send batch of logs to backend
+async function sendLogBatch() {
+  if (logBatch.length === 0) return;
+  
+  const currentBatch = [...logBatch];
+  logBatch = [];
+  batchTimer = null;
+  
+  try {
+    await axios.post(BATCH_LOG_URL, { logs: currentBatch }, {
+      timeout: 5000,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    console.log(`✅ Sent ${currentBatch.length} logs to backend successfully`);
+  } catch (error) {
+    console.error(`❌ Failed to send batch of ${currentBatch.length} logs:`, error.message);
+    
+    // Fallback: try individual log sending
+    for (const log of currentBatch) {
+      try {
+        await axios.post(LOG_BACKEND_URL, log, { timeout: 3000 });
+      } catch (individualError) {
+        console.error('❌ Individual log send also failed:', individualError.message);
+      }
+    }
+  }
+}
+
+// Send single log to backend (alternative method)
+async function sendSingleLog(logData) {
+  try {
+    await axios.post(LOG_BACKEND_URL, logData, {
+      timeout: 3000,
+      headers: { 'Content-Type': 'application/json' }
+    });
+    console.log('✅ Single log sent to backend');
+  } catch (error) {
+    console.error('❌ Failed to send single log:', error.message);
+  }
+}
+
+// All simulation functions (unchanged but now send logs to backend)
 function simulateHomePage() {
   createLog('INFO', 'User visited homepage', {
     endpoint: 'GET /',
@@ -84,7 +157,6 @@ function simulateAddToCart() {
   }
 }
 
-
 function simulatePaymentAttempt() {
   const event = mockEvents[Math.floor(Math.random() * mockEvents.length)];
   const paymentMethods = ['credit_card', 'debit_card', 'upi', 'netbanking', 'wallet'];
@@ -117,8 +189,6 @@ function simulatePaymentAttempt() {
       bankResponse: 'SUCCESS',
       processingTime: Math.floor(Math.random() * 3000) + 500
     });
-    // Optionally, reduce available tickets
-    // event.available -= quantity;
   } else {
     const errors = [
       { code: 'INSUFFICIENT_FUNDS', message: 'Insufficient balance in account' },
@@ -138,7 +208,6 @@ function simulatePaymentAttempt() {
     });
   }
 }
-
 
 function simulateSearchFailure() {
   createLog('WARN', 'Search returned no results', {
@@ -264,12 +333,13 @@ function burstMode() {
   }
 }
 
-// API Routes
+// API Routes (these now also create logs that get sent to backend)
 app.get('/', (req, res) => {
-  createLog('INFO', 'Homepage accessed', {
+  createLog('INFO', 'Homepage accessed via API', {
     endpoint: 'GET /',
     featuredEvents: mockEvents.length,
-    responseTime: Math.floor(Math.random() * 200) + 50
+    responseTime: Math.floor(Math.random() * 200) + 50,
+    userAgent: req.get('User-Agent') || 'Unknown'
   });
   
   res.json({
@@ -281,10 +351,11 @@ app.get('/', (req, res) => {
 
 app.get('/events', (req, res) => {
   const city = req.query.city;
-  createLog('INFO', 'Events list requested', {
+  createLog('INFO', 'Events list requested via API', {
     endpoint: 'GET /events',
     city: city || 'all',
-    eventCount: mockEvents.length
+    eventCount: mockEvents.length,
+    responseTime: Math.floor(Math.random() * 300) + 50
   });
   
   res.json({ events: mockEvents, city: city || 'all' });
@@ -295,17 +366,19 @@ app.get('/events/:id', (req, res) => {
   const event = mockEvents.find(e => e.id === eventId);
   
   if (event) {
-    createLog('INFO', 'Event details viewed', {
+    createLog('INFO', 'Event details viewed via API', {
       endpoint: `GET /events/${eventId}`,
       eventName: event.name,
       price: event.price,
-      available: event.available
+      available: event.available,
+      responseTime: Math.floor(Math.random() * 200) + 30
     });
     res.json(event);
   } else {
-    createLog('WARN', 'Event not found', {
+    createLog('WARN', 'Event not found via API', {
       endpoint: `GET /events/${eventId}`,
-      requestedId: eventId
+      requestedId: eventId,
+      errorCode: 'EVENT_NOT_FOUND'
     });
     res.status(404).json({ error: 'Event not found' });
   }
@@ -316,16 +389,17 @@ app.post('/cart/add', (req, res) => {
   const event = mockEvents.find(e => e.id === eventId);
   
   if (!event) {
-    createLog('ERROR', 'Add to cart failed - event not found', {
+    createLog('ERROR', 'Add to cart failed - event not found via API', {
       endpoint: 'POST /cart/add',
       eventId,
-      errorCode: 'EVENT_NOT_FOUND'
+      errorCode: 'EVENT_NOT_FOUND',
+      requestBody: req.body
     });
     return res.status(404).json({ error: 'Event not found' });
   }
   
   if (event.available < quantity) {
-    createLog('ERROR', 'Add to cart failed - insufficient tickets', {
+    createLog('ERROR', 'Add to cart failed - insufficient tickets via API', {
       endpoint: 'POST /cart/add',
       eventId,
       requestedQuantity: quantity,
@@ -335,15 +409,29 @@ app.post('/cart/add', (req, res) => {
     return res.status(400).json({ error: 'Not enough tickets available' });
   }
   
-  createLog('INFO', 'Tickets added to cart', {
+  createLog('INFO', 'Tickets added to cart via API', {
     endpoint: 'POST /cart/add',
     eventId,
     eventName: event.name,
     quantity,
-    totalAmount: event.price * quantity
+    totalAmount: event.price * quantity,
+    responseTime: Math.floor(Math.random() * 150) + 25
   });
   
   res.json({ message: 'Added to cart', totalAmount: event.price * quantity });
+});
+
+// Graceful shutdown - send remaining logs
+process.on('SIGTERM', async () => {
+  console.log('🛑 Shutting down gracefully...');
+  await sendLogBatch(); // Send any remaining logs
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('🛑 Shutting down gracefully...');
+  await sendLogBatch(); // Send any remaining logs
+  process.exit(0);
 });
 
 // Start server and begin auto-simulation
@@ -351,18 +439,19 @@ app.listen(PORT, () => {
   createLog('INFO', 'TicketBooking platform started', { 
     port: PORT,
     environment: 'development',
-    eventsAvailable: mockEvents.length
+    eventsAvailable: mockEvents.length,
+    backendURL: LOG_BACKEND_URL
   });
   
   console.log(`
   ╔════════════════════════════════════════════════════════════════╗
-  ║            🎭 TICKETBOOKING PLATFORM (Like BookMyShow)        ║
+  ║       🎭 TICKETBOOKING PLATFORM (Now with Backend Logs!)      ║
   ║                  ⚡ ULTRA-HIGH VOLUME LOGS ⚡                  ║
   ║                                                                ║
-  ║  🌐 Server: http://localhost:${PORT}                               ║
-  ║  📊 Generating logs every 50-500ms (MILLISECONDS!)            ║
-  ║  🚀 Expected: 2,000-20,000+ logs per minute                   ║
-  ║  💥 Burst mode: 100 logs every 30 seconds                     ║
+  ║  🌐 App Server: http://localhost:${PORT}                           ║
+  ║  📊 Log Backend: ${LOG_BACKEND_URL}              ║
+  ║  🚀 Batch Size: ${BATCH_SIZE} logs every ${BATCH_TIMEOUT/1000}s                        ║
+  ║  💥 Expected: 2,000-20,000+ logs per minute → MongoDB         ║
   ║                                                                ║
   ║  Available endpoints:                                          ║
   ║  • GET  /                    - Homepage                        ║
@@ -370,19 +459,26 @@ app.listen(PORT, () => {
   ║  • GET  /events/:id          - Event details                  ║
   ║  • POST /cart/add            - Add to cart                     ║
   ║                                                                ║
-  ║  🤖 Ultra-realistic simulation:                                ║
-  ║  • 1-3 simultaneous user actions                              ║
-  ║  • Homepage, browsing, payments, API calls                    ║
-  ║  • Login attempts, session timeouts                           ║
-  ║  • Server errors, performance issues                          ║
-  ║  • Burst mode every 30s (100 rapid logs)                     ║
+  ║  🔗 Now sending ALL logs to MongoDB backend!                   ║
+  ║  • Batch processing for performance                            ║
+  ║  • Fallback to individual sends if batch fails                ║
+  ║  • Real API calls also generate logs                          ║
+  ║  • Automatic + Manual log generation                          ║
   ╚════════════════════════════════════════════════════════════════╝
   `);
   
   // Start automatic log generation IMMEDIATELY
-  console.log('🚀 Starting ULTRA-FAST automatic user activity simulation...\n');
+  console.log('🚀 Starting ULTRA-FAST automatic user activity simulation...');
+  console.log('📡 All logs will be sent to MongoDB via backend API\n');
   setTimeout(simulateUserActivity, 100); // Start after 100ms
   
   // Trigger burst mode every 30 seconds
   setInterval(burstMode, 30000);
+  
+  // Also flush any remaining logs every 5 seconds
+  setInterval(() => {
+    if (logBatch.length > 0) {
+      sendLogBatch();
+    }
+  }, 5000);
 });

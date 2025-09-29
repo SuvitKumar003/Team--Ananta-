@@ -16,15 +16,15 @@ router.post('/', async (req, res) => {
       });
     }
     
-    // Add to queue (INSTANT response, processing happens in background)
+    // Add single log to queue
     await logQueue.add({ logData }, {
-      attempts: 3, // Retry 3 times if failed
+      attempts: 3,
       backoff: {
         type: 'exponential',
-        delay: 1000 // Wait 1s, then 2s, then 4s
+        delay: 1000
       },
-      removeOnComplete: true, // Clean up after success
-      removeOnFail: false // Keep failed jobs for debugging
+      removeOnComplete: true,
+      removeOnFail: false
     });
     
     // Respond immediately (don't wait for database)
@@ -55,18 +55,22 @@ router.post('/batch', async (req, res) => {
       });
     }
     
-    // Queue all logs
-    const jobs = logs.map(logData => ({
-      logData,
-      attempts: 3,
-      removeOnComplete: true
-    }));
+    console.log(`📦 Received batch of ${logs.length} logs, queuing for processing...`);
     
-    await logQueue.addBulk(jobs);
+    // Add the entire batch as one job (more efficient)
+    await logQueue.add({ logs }, {
+      attempts: 3,
+      backoff: {
+        type: 'exponential',
+        delay: 1000
+      },
+      removeOnComplete: true,
+      removeOnFail: false
+    });
     
     res.status(202).json({
       success: true,
-      message: `${logs.length} logs queued for processing`
+      message: `Batch of ${logs.length} logs queued for processing`
     });
     
   } catch (error) {

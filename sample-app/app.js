@@ -84,21 +84,41 @@ function simulateAddToCart() {
   }
 }
 
+
 function simulatePaymentAttempt() {
   const event = mockEvents[Math.floor(Math.random() * mockEvents.length)];
   const paymentMethods = ['credit_card', 'debit_card', 'upi', 'netbanking', 'wallet'];
   const paymentMethod = paymentMethods[Math.floor(Math.random() * paymentMethods.length)];
+  const quantity = Math.floor(Math.random() * 4) + 1;
+
+  // Check if tickets are available
+  if (event.available < quantity) {
+    createLog('ERROR', 'Payment failed - tickets sold out', {
+      endpoint: 'POST /payment/process',
+      paymentMethod: paymentMethod,
+      eventId: event.id,
+      eventName: event.name,
+      requestedQuantity: quantity,
+      availableTickets: event.available,
+      errorCode: 'TICKETS_SOLD_OUT',
+      errorMessage: 'Tickets are no longer available'
+    });
+    return;
+  }
+
   const success = Math.random() > 0.4; // 60% success rate
-  
+
   if (success) {
     createLog('INFO', 'Payment processed successfully', {
       endpoint: 'POST /payment/process',
       paymentMethod: paymentMethod,
-      amount: event.price,
+      amount: event.price * quantity,
       transactionId: `txn_${Date.now()}`,
       bankResponse: 'SUCCESS',
       processingTime: Math.floor(Math.random() * 3000) + 500
     });
+    // Optionally, reduce available tickets
+    // event.available -= quantity;
   } else {
     const errors = [
       { code: 'INSUFFICIENT_FUNDS', message: 'Insufficient balance in account' },
@@ -107,17 +127,18 @@ function simulatePaymentAttempt() {
       { code: 'INVALID_CVV', message: 'Invalid CVV entered' }
     ];
     const error = errors[Math.floor(Math.random() * errors.length)];
-    
+
     createLog('ERROR', 'Payment failed', {
       endpoint: 'POST /payment/process',
       paymentMethod: paymentMethod,
-      amount: event.price,
+      amount: event.price * quantity,
       errorCode: error.code,
       errorMessage: error.message,
       retryAttempt: Math.floor(Math.random() * 3) + 1
     });
   }
 }
+
 
 function simulateSearchFailure() {
   createLog('WARN', 'Search returned no results', {

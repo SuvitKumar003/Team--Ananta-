@@ -5,7 +5,9 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const cron = require('node-cron');
 const connectDB = require('./config/database');
+const Log = require('./models/Log');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -102,6 +104,44 @@ setInterval(() => {
   }
 }, 30000); // Check every 30 seconds
 
+// 🗑️ AUTOMATIC LOG CLEANUP - Delete logs older than 7 days
+// Runs every day at 3 AM
+cron.schedule('0 3 * * *', async () => {
+  try {
+    const daysToKeep = 7; // Keep only last 7 days
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+    
+    const result = await Log.deleteMany({
+      timestamp: { $lt: cutoffDate }
+    });
+    
+    console.log(`🗑️ Auto-cleanup completed: Deleted ${result.deletedCount} logs older than ${daysToKeep} days`);
+    console.log(`📅 Cutoff date: ${cutoffDate.toISOString()}`);
+  } catch (error) {
+    console.error('❌ Auto-cleanup failed:', error.message);
+  }
+});
+
+// Optional: Run cleanup on startup (removes old logs immediately)
+setTimeout(async () => {
+  try {
+    const daysToKeep = 7;
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
+    
+    const result = await Log.deleteMany({
+      timestamp: { $lt: cutoffDate }
+    });
+    
+    if (result.deletedCount > 0) {
+      console.log(`🗑️ Startup cleanup: Removed ${result.deletedCount} old logs`);
+    }
+  } catch (error) {
+    console.error('❌ Startup cleanup failed:', error.message);
+  }
+}, 5000); // Wait 5 seconds after startup
+
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('🛑 SIGTERM received, shutting down gracefully...');
@@ -127,17 +167,21 @@ const server = app.listen(PORT, () => {
   ║                                                                ║
   ║  🌐 Server:          http://localhost:${PORT}                       ║
   ║  📊 MongoDB:         Connected with pool (10-50 connections)  ║
-  ║  🔄 Redis Queue:     Active                                    ║
   ║  ⚡ Performance:     Optimized for high load                  ║
   ║                                                                ║
   ║  ✨ Features Enabled:                                          ║
   ║  • Batch processing (50 logs at once)                         ║
-  ║  • Queue system (handles 10,000+ logs/min)                    ║
   ║  • Connection pooling (50 max connections)                    ║
   ║  • Compression (smaller responses)                            ║
   ║  • Rate limiting (10,000 req/min)                             ║
   ║  • Memory monitoring                                          ║
   ║  • Graceful shutdown                                          ║
+  ║  • Auto-cleanup (keeps last 7 days only) ✅                   ║
+  ║                                                                ║
+  ║  🗑️ Cleanup Schedule:                                          ║
+  ║  • Runs daily at 3:00 AM                                      ║
+  ║  • Keeps logs from last 7 days only                           ║
+  ║  • Also runs on server startup                                ║
   ║                                                                ║
   ║  📡 Available Endpoints:                                       ║
   ║  • GET    /health              - Server health                ║
@@ -145,10 +189,11 @@ const server = app.listen(PORT, () => {
   ║  • POST   /api/logs/batch      - Receive multiple logs        ║
   ║  • GET    /api/logs            - Get logs (paginated)         ║
   ║  • GET    /api/logs/stats      - Get statistics               ║
-  ║  • GET    /api/logs/queue/stats - Queue statistics            ║
-  ║  • DELETE /api/logs/cleanup    - Clean old logs               ║
+  ║  • DELETE /api/logs/cleanup    - Manual cleanup               ║
   ║                                                                ║
   ║  💪 Can handle: 20,000+ logs per minute                       ║
   ╚════════════════════════════════════════════════════════════════╝
   `);
+  
+  console.log('✅ Automatic log cleanup scheduled (Daily at 3 AM - keeps last 7 days)');
 });

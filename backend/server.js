@@ -123,12 +123,12 @@ cron.schedule('0 3 * * *', async () => {
 });
 
 // 🤖 AI ANALYSIS SCHEDULER - Run every 2 minutes
-cron.schedule('*/2 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   try {
     console.log('🤖 Scheduled AI analysis triggered...');
     
     await aiAnalysisQueue.add(
-      { batchSize: 50 },
+      { batchSize: 500 },
       {
         attempts: 2,
         backoff: {
@@ -171,7 +171,7 @@ setTimeout(async () => {
     console.log('🚀 Running initial AI analysis on startup...');
     
     await aiAnalysisQueue.add(
-      { batchSize: 50 },
+      { batchSize: 500 },
       {
         attempts: 2,
         backoff: { type: 'exponential', delay: 5000 },

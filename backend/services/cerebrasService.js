@@ -88,7 +88,7 @@ IMPORTANT: Return ONLY valid JSON array, no other text.`;
           }
         ],
         temperature: 0.1, // Low temperature for consistent analysis
-        max_tokens: 4000,
+        max_tokens: 8000,
         response_format: { type: "json_object" } // Force JSON response
       },
       {

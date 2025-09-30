@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
 const connectDB = require('./config/database');
 const Log = require('./models/Log');
+const { aiAnalysisQueue } = require('./services/cerebrasService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,30 +19,29 @@ connectDB();
 // Security middleware
 app.use(helmet());
 
-// Compression middleware (makes responses smaller)
+// Compression middleware
 app.use(compression());
 
-// CORS with specific options
+// CORS
 app.use(cors({
-  origin: '*', // In production, specify your frontend domain
+  origin: '*',
   methods: ['GET', 'POST', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Body parser with increased limit for batch requests
+// Body parser
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// Rate limiting - prevent abuse
+// Rate limiting
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10000, // 10,000 requests per minute (very high for log ingestion)
+  windowMs: 1 * 60 * 1000,
+  max: 10000,
   message: 'Too many requests, please slow down',
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Apply rate limiting only to log ingestion
 app.use('/api/logs', limiter);
 
 // Request logging middleware
@@ -49,7 +49,7 @@ app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    if (duration > 1000) { // Log slow requests
+    if (duration > 1000) {
       console.log(`⚠️ Slow request: ${req.method} ${req.path} took ${duration}ms`);
     }
   });
@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/logs', require('./routes/logs'));
 
-// Health check with system info
+// Health check
 app.get('/health', (req, res) => {
   const used = process.memoryUsage();
   
@@ -72,7 +72,8 @@ app.get('/health', (req, res) => {
       heapUsed: `${Math.round(used.heapUsed / 1024 / 1024)}MB`,
       heapTotal: `${Math.round(used.heapTotal / 1024 / 1024)}MB`
     },
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    cerebrasApiConfigured: !!process.env.CEREBRAS_API_KEY
   });
 });
 
@@ -99,16 +100,15 @@ setInterval(() => {
   const used = process.memoryUsage();
   const heapUsedMB = Math.round(used.heapUsed / 1024 / 1024);
   
-  if (heapUsedMB > 400) { // Warn if using more than 400MB
+  if (heapUsedMB > 400) {
     console.warn(`⚠️ High memory usage: ${heapUsedMB}MB`);
   }
-}, 30000); // Check every 30 seconds
+}, 30000);
 
 // 🗑️ AUTOMATIC LOG CLEANUP - Delete logs older than 7 days
-// Runs every day at 3 AM
 cron.schedule('0 3 * * *', async () => {
   try {
-    const daysToKeep = 7; // Keep only last 7 days
+    const daysToKeep = 7;
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
     
@@ -117,13 +117,36 @@ cron.schedule('0 3 * * *', async () => {
     });
     
     console.log(`🗑️ Auto-cleanup completed: Deleted ${result.deletedCount} logs older than ${daysToKeep} days`);
-    console.log(`📅 Cutoff date: ${cutoffDate.toISOString()}`);
   } catch (error) {
     console.error('❌ Auto-cleanup failed:', error.message);
   }
 });
 
-// Optional: Run cleanup on startup (removes old logs immediately)
+// 🤖 AI ANALYSIS SCHEDULER - Run every 2 minutes
+cron.schedule('*/2 * * * *', async () => {
+  try {
+    console.log('🤖 Scheduled AI analysis triggered...');
+    
+    await aiAnalysisQueue.add(
+      { batchSize: 50 },
+      {
+        attempts: 2,
+        backoff: {
+          type: 'exponential',
+          delay: 5000
+        },
+        removeOnComplete: true,
+        removeOnFail: false
+      }
+    );
+    
+    console.log('✅ AI analysis job queued');
+  } catch (error) {
+    console.error('❌ Failed to queue AI analysis:', error.message);
+  }
+});
+
+// Run cleanup on startup
 setTimeout(async () => {
   try {
     const daysToKeep = 7;
@@ -140,7 +163,27 @@ setTimeout(async () => {
   } catch (error) {
     console.error('❌ Startup cleanup failed:', error.message);
   }
-}, 5000); // Wait 5 seconds after startup
+}, 5000);
+
+// 🚀 Run AI analysis on startup (after 10 seconds)
+setTimeout(async () => {
+  try {
+    console.log('🚀 Running initial AI analysis on startup...');
+    
+    await aiAnalysisQueue.add(
+      { batchSize: 50 },
+      {
+        attempts: 2,
+        backoff: { type: 'exponential', delay: 5000 },
+        removeOnComplete: true
+      }
+    );
+    
+    console.log('✅ Initial AI analysis job queued');
+  } catch (error) {
+    console.error('❌ Failed to queue initial AI analysis:', error.message);
+  }
+}, 10000);
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
@@ -163,15 +206,18 @@ process.on('SIGINT', () => {
 const server = app.listen(PORT, () => {
   console.log(`
   ╔════════════════════════════════════════════════════════════════╗
-  ║       🚀 LOG ANALYZER BACKEND - PRODUCTION READY              ║
+  ║       🚀 LOG ANALYZER BACKEND - AI POWERED                    ║
   ║                                                                ║
   ║  🌐 Server:          http://localhost:${PORT}                       ║
   ║  📊 MongoDB:         Connected with pool (10-50 connections)  ║
+  ║  🤖 AI Model:        Cerebras LLaMA 4 Scout 17B               ║
   ║  ⚡ Performance:     Optimized for high load                  ║
   ║                                                                ║
   ║  ✨ Features Enabled:                                          ║
   ║  • Batch processing (50 logs at once)                         ║
   ║  • Connection pooling (50 max connections)                    ║
+  ║  • AI-powered log analysis (Cerebras)                         ║
+  ║  • Anomaly detection & clustering                             ║
   ║  • Compression (smaller responses)                            ║
   ║  • Rate limiting (10,000 req/min)                             ║
   ║  • Memory monitoring                                          ║
@@ -182,6 +228,12 @@ const server = app.listen(PORT, () => {
   ║  • Runs daily at 3:00 AM                                      ║
   ║  • Keeps logs from last 7 days only                           ║
   ║  • Also runs on server startup                                ║
+  ║                                                                ║
+  ║  🤖 AI Analysis Schedule:                                      ║
+  ║  • Runs every 2 minutes                                       ║
+  ║  • Analyzes 50 logs per batch                                 ║
+  ║  • Saves to 'cerebraslogs' collection                         ║
+  ║  • Initial analysis runs in 10 seconds                        ║
   ║                                                                ║
   ║  📡 Available Endpoints:                                       ║
   ║  • GET    /health              - Server health                ║
@@ -196,4 +248,6 @@ const server = app.listen(PORT, () => {
   `);
   
   console.log('✅ Automatic log cleanup scheduled (Daily at 3 AM - keeps last 7 days)');
+  console.log('🤖 AI analysis scheduled (Every 2 minutes - Cerebras + LLaMA)');
+  console.log('🚀 Initial AI analysis will run in 10 seconds...');
 });

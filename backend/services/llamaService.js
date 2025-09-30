@@ -1,15 +1,17 @@
-const axios = require('axios');
+const Cerebras = require('@cerebras/cerebras_cloud_sdk');
 const CerebrasLog = require('../models/CerebrasLog');
 
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_API_KEY = process.env.GROQ_API_KEY;
+// Cerebras client
+const client = new Cerebras({
+  apiKey: process.env.CEREBRAS_API_KEY, // set in your .env
+});
 
 /**
  * Generate natural language explanation for a cluster of errors
  */
 async function explainErrorCluster(clusterLabel, logs) {
   try {
-    console.log(`🤖 Generating LLaMA explanation for cluster: ${clusterLabel}`);
+    console.log(`🤖 Generating Cerebras LLaMA explanation for cluster: ${clusterLabel}`);
     
     // Prepare log context
     const logContext = logs.map(log => ({
@@ -32,39 +34,30 @@ Provide a concise analysis with:
 
 Keep response under 200 words, technical but clear.`;
 
-    const response = await axios.post(
-      GROQ_API_URL,
-      {
-        model: 'llama-3.1-70b-versatile', // Fast LLaMA via Groq
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a senior DevOps engineer providing actionable error analysis.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.3,
-        max_tokens: 300
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
-          'Content-Type': 'application/json'
+    // Call Cerebras LLaMA
+    const response = await client.chat.completions.create({
+      model: 'llama-4-scout-17b-16e-instruct', // Cerebras-hosted LLaMA
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a senior DevOps engineer providing actionable error analysis.'
         },
-        timeout: 15000
-      }
-    );
-    
-    const explanation = response.data.choices[0].message.content;
-    console.log(`✅ LLaMA explanation generated for ${clusterLabel}`);
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.3,
+      max_tokens: 300,
+    });
+
+    const explanation = response.choices[0].message.content;
+    console.log(`✅ Cerebras LLaMA explanation generated for ${clusterLabel}`);
     
     return explanation;
     
   } catch (error) {
-    console.error('❌ LLaMA API error:', error.message);
+    console.error('❌ Cerebras API error:', error.message);
     return 'Unable to generate explanation at this time.';
   }
 }
@@ -96,10 +89,10 @@ async function enrichLogsWithExplanations(clusterLabel) {
       }
     );
     
-    console.log(`✅ Added LLaMA explanation to ${logs.length} logs in cluster "${clusterLabel}"`);
+    console.log(`✅ Added Cerebras LLaMA explanation to ${logs.length} logs in cluster "${clusterLabel}"`);
     
   } catch (error) {
-    console.error('❌ Error enriching logs with LLaMA:', error.message);
+    console.error('❌ Error enriching logs with Cerebras LLaMA:', error.message);
   }
 }
 

@@ -62,7 +62,7 @@ Return ONLY a valid JSON array (no markdown, no explanation) with this exact str
     "severity": "low"/"medium"/"high"/"critical",
     "category": "payment_failure"/"database_error"/"performance"/"other",
     "rootCause": "brief explanation",
-    "aiExplanation": "detailed explanation",
+    "aiExplanation": "storytelling format — explain what happened step by step, why it happened, and what impact it caused, in 3–5 sentences",
     "suggestedFix": "actionable fix",
     "clusterId": "cluster_name",
     "clusterName": "Descriptive cluster name",

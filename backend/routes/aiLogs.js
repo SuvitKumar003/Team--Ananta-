@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const CerebrasLog = require('../models/CerebrasLog');
-const { explainErrorCluster } = require('../services/llamaService');
 
 // Get AI-analyzed logs with filters
 router.get('/', async (req, res) => {
@@ -129,7 +128,6 @@ router.get('/explain/:clusterLabel', async (req, res) => {
     }
     
     // Generate new explanation
-    const explanation = await explainErrorCluster(clusterLabel, logs);
     
     // Update logs with explanation
     await CerebrasLog.updateMany(

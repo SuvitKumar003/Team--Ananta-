@@ -1,8 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
-import Navbar from './components/Navbar';
-import Home from './Pages/Home';
+import Navbar from './components/common/Navbar';
+import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
+
+// Placeholder components (we'll create these in next aims)
+const Clusters = () => <div style={{ padding: '2rem', color: 'white' }}>Clusters - Coming Soon</div>;
+const LiveFeed = () => <div style={{ padding: '2rem', color: 'white' }}>Live Feed - Coming Soon</div>;
+const Reports = () => <div style={{ padding: '2rem', color: 'white' }}>Reports - Coming Soon</div>;
 
 function App() {
   return (
@@ -10,7 +16,10 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* Add more routes here */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/clusters" element={<Clusters />} />
+        <Route path="/live" element={<LiveFeed />} />
+        <Route path="/reports" element={<Reports />} />
       </Routes>
     </BrowserRouter>
   );

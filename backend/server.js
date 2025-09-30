@@ -10,6 +10,7 @@ const connectDB = require('./config/database');
 const Log = require('./models/Log');
 const { aiAnalysisQueue } = require('./services/cerebrasService');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/logs', require('./routes/logs'));
+app.use('/api/ailogs', require('./routes/aiLogs'));
 
 // Health check
 app.get('/health', (req, res) => {

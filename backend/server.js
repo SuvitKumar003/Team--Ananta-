@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const cron = require('node-cron');
 const connectDB = require('./config/database');
 const Log = require('./models/Log');
+const { aiQueue } = require('./services/aiQueue');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -58,6 +59,7 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/logs', require('./routes/logs'));
+app.use('/api/ai-logs', require('./routes/aiLogs')); // NEW: AI-enhanced logs endpoint
 
 // Health check with system info
 app.get('/health', (req, res) => {
@@ -123,6 +125,32 @@ cron.schedule('0 3 * * *', async () => {
   }
 });
 
+// 🤖 AI ANALYSIS SCHEDULER - NEW!
+// Process logs with Cerebras + LLaMA every 2 minutes
+cron.schedule('*/2 * * * *', async () => {
+  try {
+    console.log('🤖 Triggering AI analysis job...');
+    
+    await aiQueue.add(
+      { batchSize: 50 }, // Process 50 logs at a time
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000
+        },
+        removeOnComplete: true,
+        removeOnFail: false
+      }
+    );
+    
+    console.log('✅ AI analysis job scheduled successfully');
+    
+  } catch (error) {
+    console.error('❌ AI scheduling error:', error.message);
+  }
+});
+
 // Optional: Run cleanup on startup (removes old logs immediately)
 setTimeout(async () => {
   try {
@@ -142,17 +170,52 @@ setTimeout(async () => {
   }
 }, 5000); // Wait 5 seconds after startup
 
+// 🚀 Run AI analysis on startup - NEW!
+setTimeout(async () => {
+  try {
+    console.log('🚀 Running initial AI analysis on startup...');
+    
+    await aiQueue.add(
+      { batchSize: 50 },
+      {
+        attempts: 3,
+        backoff: {
+          type: 'exponential',
+          delay: 5000
+        }
+      }
+    );
+    
+    console.log('✅ Initial AI analysis job queued');
+    
+  } catch (error) {
+    console.error('❌ Initial AI analysis failed:', error.message);
+  }
+}, 10000); // Wait 10 seconds after startup
+
 // Graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   console.log('🛑 SIGTERM received, shutting down gracefully...');
+  
+  // Close AI queue
+  await aiQueue.close();
+  console.log('✅ AI Queue closed');
+  
+  // Close server
   server.close(() => {
     console.log('✅ Server closed');
     process.exit(0);
   });
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('🛑 SIGINT received, shutting down gracefully...');
+  
+  // Close AI queue
+  await aiQueue.close();
+  console.log('✅ AI Queue closed');
+  
+  // Close server
   server.close(() => {
     console.log('✅ Server closed');
     process.exit(0);
@@ -163,11 +226,12 @@ process.on('SIGINT', () => {
 const server = app.listen(PORT, () => {
   console.log(`
   ╔════════════════════════════════════════════════════════════════╗
-  ║       🚀 LOG ANALYZER BACKEND - PRODUCTION READY              ║
+  ║    🚀 LOG ANALYZER BACKEND - AI-POWERED & PRODUCTION READY    ║
   ║                                                                ║
   ║  🌐 Server:          http://localhost:${PORT}                       ║
   ║  📊 MongoDB:         Connected with pool (10-50 connections)  ║
   ║  ⚡ Performance:     Optimized for high load                  ║
+  ║  🤖 AI Engine:       Cerebras + LLaMA Integration             ║
   ║                                                                ║
   ║  ✨ Features Enabled:                                          ║
   ║  • Batch processing (50 logs at once)                         ║
@@ -177,23 +241,40 @@ const server = app.listen(PORT, () => {
   ║  • Memory monitoring                                          ║
   ║  • Graceful shutdown                                          ║
   ║  • Auto-cleanup (keeps last 7 days only) ✅                   ║
+  ║  • AI Analysis with Cerebras (every 2 min) 🆕                 ║
+  ║  • LLaMA Explanations for error clusters 🆕                   ║
   ║                                                                ║
   ║  🗑️ Cleanup Schedule:                                          ║
   ║  • Runs daily at 3:00 AM                                      ║
   ║  • Keeps logs from last 7 days only                           ║
   ║  • Also runs on server startup                                ║
   ║                                                                ║
+  ║  🤖 AI Processing Schedule:                                    ║
+  ║  • Runs every 2 minutes                                       ║
+  ║  • Analyzes 50 logs per batch                                 ║
+  ║  • Cerebras: Pattern detection & anomaly scoring              ║
+  ║  • LLaMA: Natural language explanations                       ║
+  ║                                                                ║
   ║  📡 Available Endpoints:                                       ║
-  ║  • GET    /health              - Server health                ║
-  ║  • POST   /api/logs            - Receive single log           ║
-  ║  • POST   /api/logs/batch      - Receive multiple logs        ║
-  ║  • GET    /api/logs            - Get logs (paginated)         ║
-  ║  • GET    /api/logs/stats      - Get statistics               ║
-  ║  • DELETE /api/logs/cleanup    - Manual cleanup               ║
+  ║  • GET    /health                 - Server health             ║
+  ║  • POST   /api/logs               - Receive single log        ║
+  ║  • POST   /api/logs/batch         - Receive multiple logs     ║
+  ║  • GET    /api/logs               - Get logs (paginated)      ║
+  ║  • GET    /api/logs/stats         - Get statistics            ║
+  ║  • DELETE /api/logs/cleanup       - Manual cleanup            ║
+  ║                                                                ║
+  ║  🆕 AI-Enhanced Endpoints:                                     ║
+  ║  • GET    /api/ai-logs            - Get AI-analyzed logs      ║
+  ║  • GET    /api/ai-logs/anomalies  - Get critical anomalies    ║
+  ║  • GET    /api/ai-logs/clusters   - Get error clusters        ║
+  ║  • GET    /api/ai-logs/explain/:cluster - Get LLaMA explanation║
   ║                                                                ║
   ║  💪 Can handle: 20,000+ logs per minute                       ║
+  ║  🧠 AI Processing: 50 logs every 2 minutes                    ║
   ╚════════════════════════════════════════════════════════════════╝
   `);
   
   console.log('✅ Automatic log cleanup scheduled (Daily at 3 AM - keeps last 7 days)');
+  console.log('🤖 AI analysis scheduled (Every 2 minutes - Cerebras + LLaMA)');
+  console.log('🚀 Initial AI analysis will run in 10 seconds...');
 });

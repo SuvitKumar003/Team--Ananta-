@@ -98,7 +98,8 @@ router.get('/', async (req, res) => {
     let query = {};
     
     if (level) {
-      query.level = level;
+       const levels = level.split(',').map(l => l.trim());
+      query.level = { $in: levels };
     }
     
     if (anomalyOnly === 'true') {

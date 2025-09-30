@@ -3,6 +3,8 @@ import { logAPI } from '../services/api';
 import StatsOverview from '../components/dashboard/StatsOverview';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorTimeline from '../components/dashboard/ErrorTimeline';
+import SeverityChart from '../components/dashboard/SeverityChart';
+import CriticalIssues from '../components/dashboard/CriticalIssues';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -98,10 +100,10 @@ const Dashboard = () => {
         <div className="dashboard-section">
           <div className="section-header">
             <h2 className="section-title">Severity Distribution</h2>
-            <span className="section-badge">Coming Soon</span>
+            <span className="section-badge">Live</span>
           </div>
-          <div className="section-content placeholder">
-            Pie chart will appear here
+          <div className="section-content">
+            <SeverityChart stats={stats} loading={loading} />
           </div>
         </div>
       </div>
@@ -109,10 +111,10 @@ const Dashboard = () => {
       <div className="dashboard-section full-width">
         <div className="section-header">
           <h2 className="section-title">Critical Issues</h2>
-          <span className="section-badge">Coming Soon</span>
+          <span className="section-badge">Live</span>
         </div>
-        <div className="section-content placeholder">
-          Critical issues table will appear here
+        <div className="section-content">
+          <CriticalIssues />
         </div>
       </div>
     </div>

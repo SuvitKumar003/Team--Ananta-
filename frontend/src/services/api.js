@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://log-backend-73yn.onrender.com/api';
+const API_BASE_URL = process.env.REACT_APP_API_BASE;
 
 // Create axios instance with default config
 const api = axios.create({

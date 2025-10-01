@@ -4,7 +4,7 @@ const path = require('path');
 const axios = require('axios'); // Add this dependency
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 // Backend URL where logs will be sent
 const LOG_BACKEND_URL = 'https://log-backend-73yn.onrender.com/api/logs';

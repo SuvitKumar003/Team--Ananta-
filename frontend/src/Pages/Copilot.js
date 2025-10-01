@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./Copilot.css";
 
-const API_BASE = process.env.REACT_APP_API_BASE;
+const API_BASE = "https://log-backend-73yn.onrender.com/api";
 
 const Copilot = () => {
   const [messages, setMessages] = useState([

@@ -62,7 +62,8 @@ app.use('/api/logs', require('./routes/logs'));
 app.use('/api/ailogs', require('./routes/aiLogs'));
 // Add this with your other route imports
 app.use('/api/ai', require('./routes/aiSearch'));
-
+app.use('/api/alerts', require('./routes/smartAlerts'));
+app.use('/api/timeline', require('./routes/timeline'));
 // Health check
 app.get('/health', (req, res) => {
   const used = process.memoryUsage();

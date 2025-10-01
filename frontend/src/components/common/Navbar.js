@@ -9,9 +9,6 @@ const Navbar = () => {
     { path: "/", label: "Home" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/copilot", label: "LLama  Chat" }, // ← ADD THIS
-    { path: "/clusters", label: "Clusters" },
-    { path: "/live", label: "Live Feed" },
-    { path: "/reports", label: "Reports" },
     { path: "/alerts", label: "Alerts" },
   ];
 

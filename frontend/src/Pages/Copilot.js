@@ -188,7 +188,7 @@ const Copilot = () => {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.role}`}>
               <div className="message-avatar">
-                {msg.role === "user" ? "👤" : "🤖"}
+                {msg.role === "user" ? "👤" : "😊"}
               </div>
 
               <div className="message-content">
@@ -237,7 +237,7 @@ const Copilot = () => {
 
           {loading && (
             <div className="message assistant">
-              <div className="message-avatar">🤖</div>
+              <div className="message-avatar">😊</div>
               <div className="message-content">
                 <div className="typing-indicator">
                   <span></span>

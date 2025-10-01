@@ -12,6 +12,7 @@ const Navbar = () => {
     { path: "/clusters", label: "Clusters" },
     { path: "/live", label: "Live Feed" },
     { path: "/reports", label: "Reports" },
+    { path: "/alerts", label: "Alerts" },
   ];
 
   return (

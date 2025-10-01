@@ -8,6 +8,7 @@ const Navbar = () => {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/dashboard', label: 'Dashboard' },
+    { path: '/copilot', label: '🤖 AI Copilot' }, // ← ADD THIS
     { path: '/clusters', label: 'Clusters' },
     { path: '/live', label: 'Live Feed' },
     { path: '/reports', label: 'Reports' },

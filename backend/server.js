@@ -60,6 +60,8 @@ app.use((req, res, next) => {
 // Routes
 app.use('/api/logs', require('./routes/logs'));
 app.use('/api/ailogs', require('./routes/aiLogs'));
+// Add this with your other route imports
+app.use('/api/ai', require('./routes/aiSearch'));
 
 // Health check
 app.get('/health', (req, res) => {

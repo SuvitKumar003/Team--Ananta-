@@ -1,25 +1,26 @@
 // frontend/src/Pages/Copilot.js
-import React, { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
-import './Copilot.css';
+import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
+import "./Copilot.css";
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = "http://localhost:5000/api";
 
 const Copilot = () => {
   const [messages, setMessages] = useState([
     {
-      role: 'assistant',
-      content: '👋 Hi! I\'m your AI log analyst powered by Cerebras LLaMA 4.\n\nAsk me anything about your logs in plain English!\n\n**Try asking:**\n• "Why are payments failing?"\n• "Show errors in Mumbai from last hour"\n• "What\'s breaking right now?"\n• "Are there any new anomalies?"',
-      timestamp: new Date()
-    }
+      role: "assistant",
+      content:
+        '👋 Hi! I\'m your AI log analyst powered by Cerebras LLaMA 4.\n\nAsk me anything about your logs in plain English!\n\n**Try asking:**\n• "Why are payments failing?"\n• "Show errors in Mumbai from last hour"\n• "What\'s breaking right now?"\n• "Are there any new anomalies?"',
+      timestamp: new Date(),
+    },
   ]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const Copilot = () => {
         setSuggestions(response.data.suggestions);
       }
     } catch (error) {
-      console.error('Failed to load suggestions:', error);
+      console.error("Failed to load suggestions:", error);
     }
   };
 
@@ -46,21 +47,21 @@ const Copilot = () => {
     if (!question.trim()) return;
 
     const userMessage = {
-      role: 'user',
+      role: "user",
       content: question,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
     setLoading(true);
 
     try {
       const startTime = Date.now();
-      
+
       const response = await axios.post(`${API_BASE}/ai/search`, {
         query: question,
-        timeRange: 24
+        timeRange: 24,
       });
 
       const responseTime = Date.now() - startTime;
@@ -68,11 +69,11 @@ const Copilot = () => {
 
       if (data.success) {
         let assistantReply = `${data.answer}\n\n`;
-        
+
         if (data.rootCause) {
           assistantReply += `**🔍 Root Cause:**\n${data.rootCause}\n\n`;
         }
-        
+
         if (data.impact) {
           assistantReply += `**📊 Impact:**\n${data.impact}\n\n`;
         }
@@ -82,7 +83,7 @@ const Copilot = () => {
           data.suggestedFixes.forEach((fix, i) => {
             assistantReply += `${i + 1}. ${fix}\n`;
           });
-          assistantReply += '\n';
+          assistantReply += "\n";
         }
 
         if (data.timeline) {
@@ -95,48 +96,59 @@ const Copilot = () => {
 
         assistantReply += `\n\n⚡ *Response time: ${responseTime}ms*`;
 
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: assistantReply,
-          timestamp: new Date(),
-          logs: data.relevantLogs?.slice(0, 5),
-          responseTime
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: assistantReply,
+            timestamp: new Date(),
+            logs: data.relevantLogs?.slice(0, 5),
+            responseTime,
+          },
+        ]);
       } else {
-        setMessages(prev => [...prev, {
-          role: 'assistant',
-          content: `❌ ${data.error || 'Sorry, I encountered an error analyzing your logs.'}\n\nPlease try rephrasing your question or check if the backend is running.`,
-          timestamp: new Date()
-        }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `❌ ${
+              data.error || "Sorry, I encountered an error analyzing your logs."
+            }\n\nPlease try rephrasing your question or check if the backend is running.`,
+            timestamp: new Date(),
+          },
+        ]);
       }
-
     } catch (error) {
-      console.error('Chat error:', error);
-      
-      let errorMessage = '❌ Failed to connect to AI service.\n\n';
-      
+      console.error("Chat error:", error);
+
+      let errorMessage = "❌ Failed to connect to AI service.\n\n";
+
       if (error.response) {
         errorMessage += `Server error: ${error.response.status}\n`;
-        errorMessage += error.response.data?.error || 'Unknown error';
+        errorMessage += error.response.data?.error || "Unknown error";
       } else if (error.request) {
-        errorMessage += 'Cannot reach backend server.\n';
-        errorMessage += 'Make sure the backend is running on http://localhost:5000';
+        errorMessage += "Cannot reach backend server.\n";
+        errorMessage +=
+          "Make sure the backend is running on http://localhost:5000";
       } else {
         errorMessage += error.message;
       }
-      
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: errorMessage,
-        timestamp: new Date()
-      }]);
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: errorMessage,
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
@@ -144,12 +156,12 @@ const Copilot = () => {
 
   const formatMessage = (content) => {
     // Convert markdown-style bold to HTML
-    return content.split('\n').map((line, i) => {
+    return content.split("\n").map((line, i) => {
       // Bold text
-      line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      line = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
       // Italic text
-      line = line.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      
+      line = line.replace(/\*(.*?)\*/g, "<em>$1</em>");
+
       return <div key={i} dangerouslySetInnerHTML={{ __html: line }} />;
     });
   };
@@ -160,11 +172,12 @@ const Copilot = () => {
       <div className="copilot-header">
         <div className="header-content">
           <h1 className="copilot-title">
-            🤖 AI Copilot
+            LLama Chat
             <span className="copilot-badge">Powered by Cerebras</span>
           </h1>
           <p className="copilot-subtitle">
-            Ask questions about your logs in plain English • Lightning-fast responses
+            Ask questions about your logs in plain English • Lightning-fast
+            responses
           </p>
         </div>
       </div>
@@ -175,14 +188,12 @@ const Copilot = () => {
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.role}`}>
               <div className="message-avatar">
-                {msg.role === 'user' ? '👤' : '🤖'}
+                {msg.role === "user" ? "👤" : "🤖"}
               </div>
-              
+
               <div className="message-content">
-                <div className="message-text">
-                  {formatMessage(msg.content)}
-                </div>
-                
+                <div className="message-text">{formatMessage(msg.content)}</div>
+
                 {/* Show relevant logs if available */}
                 {msg.logs && msg.logs.length > 0 && (
                   <div className="relevant-logs">
@@ -190,7 +201,9 @@ const Copilot = () => {
                     {msg.logs.slice(0, 3).map((log, i) => (
                       <div key={i} className="log-item">
                         <div className="log-header">
-                          <span className={`log-level ${log.level.toLowerCase()}`}>
+                          <span
+                            className={`log-level ${log.level.toLowerCase()}`}
+                          >
                             {log.level}
                           </span>
                           <span className="log-time">
@@ -212,7 +225,10 @@ const Copilot = () => {
                 <div className="message-timestamp">
                   {msg.timestamp.toLocaleTimeString()}
                   {msg.responseTime && (
-                    <span className="response-time"> • {msg.responseTime}ms</span>
+                    <span className="response-time">
+                      {" "}
+                      • {msg.responseTime}ms
+                    </span>
                   )}
                 </div>
               </div>
@@ -273,7 +289,7 @@ const Copilot = () => {
             disabled={loading || !input.trim()}
             className="send-button"
           >
-            {loading ? '⏳' : '➤'}
+            {loading ? "⏳" : "➤"}
           </button>
         </div>
       </div>

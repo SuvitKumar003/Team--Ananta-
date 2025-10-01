@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import './Navbar.css';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import "./Navbar.css";
 
 const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: 'Home' },
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/copilot', label: '🤖 AI Copilot' }, // ← ADD THIS
-    { path: '/clusters', label: 'Clusters' },
-    { path: '/live', label: 'Live Feed' },
-    { path: '/reports', label: 'Reports' },
+    { path: "/", label: "Home" },
+    { path: "/dashboard", label: "Dashboard" },
+    { path: "/copilot", label: "LLama  Chat" }, // ← ADD THIS
+    { path: "/clusters", label: "Clusters" },
+    { path: "/live", label: "Live Feed" },
+    { path: "/reports", label: "Reports" },
   ];
 
   return (
@@ -27,15 +27,15 @@ const Navbar = () => {
             <li key={item.path}>
               <Link
                 to={item.path}
-                className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                className={`nav-link ${
+                  location.pathname === item.path ? "active" : ""
+                }`}
               >
                 {item.label}
               </Link>
             </li>
           ))}
         </ul>
-
-        
       </div>
     </nav>
   );

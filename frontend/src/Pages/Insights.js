@@ -34,7 +34,7 @@ const Insights = () => {
         category: 'all',
       });
 
-      const API_BASE = 'http://localhost:5000/api';
+      const API_BASE = 'https://log-analyzer-dpy8.onrender.com/api';
 
       useEffect(() => {
         fetchAILogs();

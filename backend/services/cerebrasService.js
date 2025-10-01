@@ -61,9 +61,9 @@ Return ONLY a valid JSON array (no markdown, no explanation) with this exact str
     "anomalyScore": 0.0-1.0,
     "severity": "low"/"medium"/"high"/"critical",
     "category": "payment_failure"/"database_error"/"performance"/"other",
-    "rootCause": "brief explanation",
-    "aiExplanation": "storytelling format — explain what happened step by step, why it happened, and what impact it caused, in 3–5 sentences",
-    "suggestedFix": "actionable fix",
+    "rootCause": "brief explanation in 1 line",
+    "aiExplanation": "storytelling format — explain what happened step by step, why it happened, and what impact it caused, in 3–5 sentences also how it happened like user went to this step then failed here",
+    "suggestedFix": "actionable fix in one line",
     "clusterId": "cluster_name",
     "clusterName": "Descriptive cluster name",
     "similarLogsCount": number

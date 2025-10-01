@@ -6,6 +6,7 @@ import Home from './Pages/Home';
 import Dashboard from './Pages/Dashboard';
 import Copilot from './Pages/Copilot'; // ← ADD THIS
 import SmartAlerts from './Pages/SmartAlerts'; 
+import Insights from './Pages/Insights';
 
 // Placeholder components (we'll create these in next aims)
 const Clusters = () => <div style={{ padding: '2rem', color: 'white' }}>Clusters - Coming Soon</div>;
@@ -24,7 +25,7 @@ function App() {
         <Route path="/live" element={<LiveFeed />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/alerts" element={<SmartAlerts />} />
-
+        <Route path="/insights" element={<Insights />} />
       </Routes>
     </BrowserRouter>
   );

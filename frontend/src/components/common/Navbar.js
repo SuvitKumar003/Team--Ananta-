@@ -7,9 +7,11 @@ const Navbar = () => {
 
   const navItems = [
     { path: "/", label: "Home" },
-    { path: "/dashboard", label: "Dashboard" },
-    { path: "/copilot", label: "LLama  Chat" }, // ← ADD THIS
+    { path: "/dashboard", label: "Stats" },
     { path: "/alerts", label: "Alerts" },
+    { path: "/insights", label: "Logs Insights" }, 
+        { path: "/copilot", label: "Chat with Logs" }, // ← ADD THIS
+
   ];
 
   return (

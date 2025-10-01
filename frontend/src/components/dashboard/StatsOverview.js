@@ -17,9 +17,7 @@ const StatsOverview = ({ stats, loading }) => {
 
   const totalLogs = stats?.total || 0;
   const errorCount = (stats?.byLevel?.ERROR || 0) + (stats?.byLevel?.CRITICAL || 0);
-  const anomalyCount = stats?.anomalies || 0;
   const errorRate = totalLogs > 0 ? ((errorCount / totalLogs) * 100).toFixed(1) : 0;
-  const anomalyRate = totalLogs > 0 ? ((anomalyCount / totalLogs) * 100).toFixed(2) : 0;
 
   return (
     <div className="stats-overview">
@@ -40,21 +38,7 @@ const StatsOverview = ({ stats, loading }) => {
           icon="⚠️"
         />
         
-        <StatCard
-          title="Anomalies Detected"
-          value={anomalyCount.toLocaleString()}
-          subtitle="AI-identified issues"
-          color="yellow"
-          icon="🔍"
-        />
-        
-        <StatCard
-          title="Anomaly Rate"
-          value={`${anomalyRate}%`}
-          subtitle="Unusual patterns found"
-          color="purple"
-          icon="🤖"
-        />
+      
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./Copilot.css";
 
-const API_BASE = "https://team-ananta-9hz7.onrender.com/api";
+const API_BASE = "https://log-analyzer1.onrender.com/api";
 
 const Copilot = () => {
   const [messages, setMessages] = useState([
@@ -129,7 +129,7 @@ const Copilot = () => {
       } else if (error.request) {
         errorMessage += "Cannot reach backend server.\n";
         errorMessage +=
-          "Make sure the backend is running on https://team-ananta-9hz7.onrender.com/";
+          "Make sure the backend is running on https://log-analyzer1.onrender.com/";
       } else {
         errorMessage += error.message;
       }

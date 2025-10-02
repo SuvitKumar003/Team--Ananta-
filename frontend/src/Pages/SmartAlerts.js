@@ -10,17 +10,29 @@ const SmartAlerts = () => {
   const [loading, setLoading] = useState(true);
   const [evaluating, setEvaluating] = useState(false);
   const [selectedAlert, setSelectedAlert] = useState(null);
+  const [lastEvaluated, setLastEvaluated] = useState(null);
 
   useEffect(() => {
-    fetchAlerts();
-    const interval = setInterval(fetchAlerts, 30000);
-    return () => clearInterval(interval);
+    // Auto-evaluate on page load
+    evaluateAndFetchAlerts();
+    
+    // Refresh alerts every 30 seconds
+    const alertInterval = setInterval(fetchAlerts, 30000);
+    
+    // Auto-evaluate every 5 minutes (same as backend cron)
+    const evalInterval = setInterval(evaluateAndFetchAlerts, 5 * 60 * 1000);
+    
+    return () => {
+      clearInterval(alertInterval);
+      clearInterval(evalInterval);
+    };
   }, []);
 
   const fetchAlerts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE}/alerts`);
+      // Fetch alerts from last 24 hours
+      const response = await axios.get(`${API_BASE}/alerts?hours=24&limit=100`);
       if (response.data.success) {
         setAlerts(response.data.alerts);
       }
@@ -31,16 +43,29 @@ const SmartAlerts = () => {
     }
   };
 
-  const evaluateNow = async () => {
+  const evaluateAlerts = async () => {
     try {
       setEvaluating(true);
-      await axios.post(`${API_BASE}/alerts/evaluate`);
-      await fetchAlerts();
+      const response = await axios.post(`${API_BASE}/alerts/evaluate`);
+      setLastEvaluated(new Date());
+      return response.data;
     } catch (error) {
       console.error('Error evaluating alerts:', error);
+      return null;
     } finally {
       setEvaluating(false);
     }
+  };
+
+  // Combined function: evaluate then fetch
+  const evaluateAndFetchAlerts = async () => {
+    await evaluateAlerts();
+    await fetchAlerts();
+  };
+
+  // Manual evaluation (button click)
+  const evaluateNow = async () => {
+    await evaluateAndFetchAlerts();
   };
 
   const acknowledgeAlert = async (alertId) => {
@@ -76,6 +101,20 @@ const SmartAlerts = () => {
     return badges[status] || badges.active;
   };
 
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now - time;
+    const diffMins = Math.floor(diffMs / 60000);
+    
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
+  };
+
   const activeAlerts = alerts.filter(a => a.status === 'active');
   const acknowledgedAlerts = alerts.filter(a => a.status === 'acknowledged');
   const resolvedAlerts = alerts.filter(a => a.status === 'resolved');
@@ -83,7 +122,9 @@ const SmartAlerts = () => {
   if (loading && alerts.length === 0) {
     return (
       <div className="smart-alerts-container">
-        <div className="loading-spinner">Loading alerts...</div>
+        <div className="loading-spinner">
+          {evaluating ? 'Evaluating alerts...' : 'Loading alerts...'}
+        </div>
       </div>
     );
   }
@@ -93,9 +134,14 @@ const SmartAlerts = () => {
       {/* Header */}
       <div className="alerts-header">
         <div>
-          <h1 className="alerts-title">Smart Alerts</h1>
+          <h1 className="alerts-title">Smart Alerts (24h)</h1>
           <p className="alerts-subtitle">
-            AI-powered alert system that only notifies when it matters
+            AI-powered alert system • Auto-evaluates every 5 minutes
+            {lastEvaluated && (
+              <span className="last-evaluated">
+                {' • Last checked: '}{formatTimeAgo(lastEvaluated)}
+              </span>
+            )}
           </p>
         </div>
         <button 
@@ -103,7 +149,14 @@ const SmartAlerts = () => {
           disabled={evaluating}
           className="evaluate-button"
         >
-          {evaluating ? 'Evaluating...' : 'Evaluate Now'}
+          {evaluating ? (
+            <>
+              <span className="spinner-small"></span>
+              Evaluating...
+            </>
+          ) : (
+            '🔄 Evaluate Now'
+          )}
         </button>
       </div>
 
@@ -121,6 +174,10 @@ const SmartAlerts = () => {
           <div className="stat-number">{resolvedAlerts.length}</div>
           <div className="stat-label">Resolved</div>
         </div>
+        <div className="stat1-card total">
+          <div className="stat-number">{alerts.length}</div>
+          <div className="stat-label">Total (24h)</div>
+        </div>
       </div>
 
       {/* Alerts List */}
@@ -128,7 +185,7 @@ const SmartAlerts = () => {
         <div className="no-alerts">
           <div className="no-alerts-icon">✓</div>
           <h2>All Clear</h2>
-          <p>No alerts detected. Your system is running smoothly.</p>
+          <p>No alerts detected in the last 24 hours. Your system is running smoothly.</p>
         </div>
       ) : (
         <div className="alerts-list">
@@ -137,7 +194,7 @@ const SmartAlerts = () => {
 
             return (
               <div 
-                key={alert.id} 
+                key={alert.alertId} 
                 className={`alert-card ${getSeverityClass(alert.severity)}`}
               >
                 {/* Alert Header */}
@@ -177,7 +234,7 @@ const SmartAlerts = () => {
                   <div className="stat-item">
                     <span className="stat-label">Time</span>
                     <span className="stat-value">
-                      {new Date(alert.timestamp).toLocaleTimeString()}
+                      {formatTimeAgo(alert.createdAt || alert.timestamp)}
                     </span>
                   </div>
                 </div>
@@ -192,7 +249,7 @@ const SmartAlerts = () => {
                   </button>
                   {alert.status === 'active' && (
                     <button
-                      onClick={() => acknowledgeAlert(alert.id)}
+                      onClick={() => acknowledgeAlert(alert.alertId)}
                       className="btn btn-acknowledge"
                     >
                       Acknowledge
@@ -200,7 +257,7 @@ const SmartAlerts = () => {
                   )}
                   {(alert.status === 'active' || alert.status === 'acknowledged') && (
                     <button
-                      onClick={() => resolveAlert(alert.id)}
+                      onClick={() => resolveAlert(alert.alertId)}
                       className="btn btn-resolve"
                     >
                       Resolve
@@ -227,6 +284,10 @@ const SmartAlerts = () => {
                 </div>
                 <h2 className="modal-title">{selectedAlert.title}</h2>
                 <p className="modal-description">{selectedAlert.description}</p>
+                <p className="modal-timestamp">
+                  {formatTimeAgo(selectedAlert.createdAt || selectedAlert.timestamp)} • 
+                  {' '}{new Date(selectedAlert.createdAt || selectedAlert.timestamp).toLocaleString()}
+                </p>
               </div>
               <button className="modal-close" onClick={() => setSelectedAlert(null)}>
                 ✕
@@ -290,7 +351,7 @@ const SmartAlerts = () => {
             <div className="modal-footer">
               {selectedAlert.status === 'active' && (
                 <button
-                  onClick={() => acknowledgeAlert(selectedAlert.id)}
+                  onClick={() => acknowledgeAlert(selectedAlert.alertId)}
                   className="btn btn-acknowledge"
                 >
                   Acknowledge
@@ -298,7 +359,7 @@ const SmartAlerts = () => {
               )}
               {(selectedAlert.status === 'active' || selectedAlert.status === 'acknowledged') && (
                 <button
-                  onClick={() => resolveAlert(selectedAlert.id)}
+                  onClick={() => resolveAlert(selectedAlert.alertId)}
                   className="btn btn-resolve"
                 >
                   Resolve

@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import "./Copilot.css";
 
-const API_BASE = "https://team-ananta-9hz7.onrender.com//api";
+const API_BASE = "https://team-ananta-9hz7.onrender.com/api";
 
 const Copilot = () => {
   const [messages, setMessages] = useState([

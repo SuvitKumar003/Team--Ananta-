@@ -34,7 +34,7 @@ const Insights = () => {
         category: 'all',
       });
 
-      const API_BASE = 'https://team-ananta-9hz7.onrender.com//api';
+      const API_BASE = 'https://team-ananta-9hz7.onrender.com/api';
 
       useEffect(() => {
         fetchAILogs();

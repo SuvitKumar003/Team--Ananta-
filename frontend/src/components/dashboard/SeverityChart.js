@@ -63,26 +63,30 @@ const SeverityChart = ({ stats, loading }) => {
     return null;
   };
 
-  const CustomLegend = ({ payload }) => {
-    return (
-      <div className="severity-legend">
-        {payload.map((entry, index) => (
+const CustomLegend = ({ payload }) => {
+  return (
+    <div className="severity-legend">
+      {payload.map((entry, index) => {
+        const { name, value, color, percentage } = entry.payload;
+        return (
           <div key={index} className="legend-item">
             <div 
               className="legend-color" 
-              style={{ backgroundColor: entry.color }}
+              style={{ backgroundColor: color }}
             ></div>
             <div className="legend-info">
-              <span className="legend-name">{entry.value}</span>
+              <span className="legend-name">{name}</span>
               <span className="legend-stats">
-                {data[index].value.toLocaleString()} ({data[index].percentage}%)
+                {value.toLocaleString()} ({percentage}%)
               </span>
             </div>
           </div>
-        ))}
-      </div>
-    );
-  };
+        );
+      })}
+    </div>
+  );
+};
+
 
   if (data.length === 0) {
     return (

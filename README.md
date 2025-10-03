@@ -70,7 +70,7 @@
 - **Smart Clustering** - Groups similar errors automatically
 - **Storytelling Format** - Human-readable explanations of complex issues
 
-### 💬 **Conversational AI Copilot**
+### 💬 **Conversational AI LLAMA chat**
 
 ```
 User: "Why are payments failing?"
@@ -114,7 +114,7 @@ Ananta: "Payments are failing due to gateway timeouts. 47 users
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         FRONTEND (React)                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │  Dashboard   │  │  AI Copilot  │  │ Smart Alerts │              │
+│  │  Dashboard   │  │  AI LLAMA chat  │  │ Smart Alerts │              │
 │  │  (Stats)     │  │  (Chat)      │  │  (Timeline)  │              │
 │  └──────────────┘  └──────────────┘  └──────────────┘              │
 └────────────────────────────┬────────────────────────────────────────┘
@@ -263,7 +263,7 @@ frontend/
 │   ├── Pages/
 │   │   ├── Home.js              # Landing page
 │   │   ├── Dashboard.js         # Stats & metrics
-│   │   ├── Copilot.js          # AI chat interface
+│   │   ├── LLAMA chat.js          # AI chat interface
 │   │   ├── SmartAlerts.js      # Alert management
 │   │   └── Insights.js         # Log insights
 │   ├── components/
@@ -291,7 +291,7 @@ frontend/
 - Error timeline (last 6/12/24 hours)
 - Critical issues table with sorting
 
-#### 2. **AI Copilot** (`/copilot`)
+#### 2. **AI LLAMA chat** (`/LLAMA chat`)
 
 - Natural language search interface
 - Conversational AI responses
@@ -468,7 +468,7 @@ Response: {
 }
 ```
 
-### **AI Search API** (Copilot)
+### **AI Search API** (LLAMA chat)
 
 #### Natural Language Search
 
@@ -637,9 +637,9 @@ Response: {
 - Error timeline graph
 - Critical issues table
 
-### 2. AI Copilot - Conversational Search
+### 2. AI LLAMA chat - Conversational Search
 
-![Copilot](https://via.placeholder.com/800x500?text=AI+Copilot+Screenshot)
+![LLAMA chat](https://via.placeholder.com/800x500?text=AI+LLAMA chat+Screenshot)
 
 - Natural language input
 - AI-powered responses

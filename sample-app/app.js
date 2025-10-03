@@ -2,14 +2,15 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const axios = require('axios'); // Add this dependency
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Backend URL where logs will be sent
-const LOG_BACKEND_URL = 'http://localhost:5000/api/logs';
-const BATCH_LOG_URL = 'http://localhost:5000/api/logs/batch';
-
+// Change these lines at the top of sample-app/app.js
+const LOG_BACKEND_URL = process.env.LOG_BACKEND_URL || 'http://localhost:5000/api/logs';
+const BATCH_LOG_URL = process.env.BATCH_LOG_URL || 'http://localhost:5000/api/logs/batch';
 // Middleware
 app.use(cors());
 app.use(express.json());

@@ -8,7 +8,7 @@
 
 **The next generation of log analysis - powered by Cerebras LLaMA 4 AI**
 
-[🎥 Live Demo](#-https://log-analyzer-full-stack.onrender.com) • [📖 Documentation](#-table-of-contents) • [🚀 Quick Start](#-quick-start) • [💡 Features](#-features)
+[🎥 Live Demo](https://log-analyzer-full-stack.onrender.com) • [📖 Documentation](#-table-of-contents) • [🚀 Quick Start](#-quick-start) • [💡 Features](#-features)
 
 ✨ “Built with speed from Cerebras, intelligence from LLaMA, and portability from Docker — our project is fast, smart, and easy to use anywhere.”
 
@@ -798,8 +798,8 @@ MIT License - See [LICENSE](LICENSE) file for details
 
 - 📧 **Email:** suvitkumar03@gmail.com
 - 🐛 **Issues:** [GitHub Issues](https://github.com/SuvitKumar003/Team--Ananta-/issues)
-- 🌐 **Linkedin Suvit Kumar:** [Linkedin Suvit](#-https://www.linkedin.com/in/suvitkumar03/)
-- 🌐 **Linkedin Kriti Mahajan:** [Linkedin Krit](#-https://www.linkedin.com/in/kritimjn09/)
+- 🌐 **Linkedin Suvit Kumar:** [Linkedin Suvit](https://www.linkedin.com/in/suvitkumar03/)
+- 🌐 **Linkedin Kriti Mahajan:** [Linkedin Krit](https://www.linkedin.com/in/kritimjn09/)
 
 ---
 

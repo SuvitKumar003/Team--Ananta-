@@ -10,6 +10,8 @@
 
 [🎥 Live Demo](#-live-demo) • [📖 Documentation](#-table-of-contents) • [🚀 Quick Start](#-quick-start) • [💡 Features](#-features)
 
+✨ “Built with speed from Cerebras, intelligence from LLaMA, and portability from Docker — our project is fast, smart, and easy to use anywhere.”
+
 </div>
 
 ---

@@ -1,23 +1,12 @@
 // backend/services/smartAlerts.js
 const CerebrasLog = require('../models/CerebrasLog');
 const Log = require('../models/Log');
-
-/**
- * Smart Alert Engine
- * Only alerts when it REALLY matters (reduces alert fatigue)
- */
+const Alert = require('../models/Alert'); // NEW: Import Alert model
 
 const ALERT_RULES = {
-  // Critical endpoints that should NEVER fail
   criticalEndpoints: ['/payment', '/checkout', '/login', '/api/payment'],
-  
-  // Error rate spike threshold (50% increase)
   spikeThreshold: 0.5,
-  
-  // Minimum affected users to trigger alert
   minAffectedUsers: 5,
-  
-  // High-value error codes
   criticalErrorCodes: [
     'PAYMENT_GATEWAY_DOWN',
     'DATABASE_UNAVAILABLE', 
@@ -25,8 +14,6 @@ const ALERT_RULES = {
     'CARD_DECLINED',
     'PAYMENT_GATEWAY_TIMEOUT'
   ],
-  
-  // Alert cooldown (5 minutes between same alerts)
   alertCooldown: 5 * 60 * 1000
 };
 
@@ -34,17 +21,12 @@ class SmartAlertEngine {
   constructor() {
     this.baselineErrorRate = 0;
     this.lastAlertTime = {};
-    this.recentAlerts = [];
   }
 
-  /**
-   * Main alert evaluation function
-   */
   async evaluateAlerts() {
     try {
       console.log('🔔 Evaluating smart alerts...');
 
-      // Get logs from last 5 minutes
       const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
       const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
       
@@ -55,11 +37,9 @@ class SmartAlertEngine {
         }).lean()
       ]);
 
-      // Calculate current and previous error rates
       const currentErrorRate = this.calculateErrorRate(recentLogs);
       const previousErrorRate = this.calculateErrorRate(previousLogs);
 
-      // Update baseline on first run
       if (this.baselineErrorRate === 0) {
         this.baselineErrorRate = previousErrorRate || 0.1;
       }
@@ -112,18 +92,25 @@ class SmartAlertEngine {
         this.shouldSendAlert(alert.type)
       );
 
-      // Store alerts
-      this.recentAlerts = [
-        ...filteredAlerts.map(a => ({ ...a, timestamp: new Date() })),
-        ...this.recentAlerts.slice(0, 49) // Keep last 50
-      ];
+      // CHANGED: Save alerts to MongoDB instead of memory
+      const savedAlerts = [];
+      for (const alertData of filteredAlerts) {
+        try {
+          const alert = new Alert(alertData);
+          await alert.save();
+          savedAlerts.push(alert);
+          console.log(`✅ Alert saved: ${alert.title}`);
+        } catch (error) {
+          console.error('❌ Failed to save alert:', error.message);
+        }
+      }
 
-      console.log(`✅ Smart alerts: ${filteredAlerts.length} new, ${alerts.length - filteredAlerts.length} suppressed`);
+      console.log(`✅ Smart alerts: ${savedAlerts.length} new, ${alerts.length - savedAlerts.length} suppressed`);
 
       return {
         success: true,
-        alerts: filteredAlerts,
-        suppressed: alerts.length - filteredAlerts.length,
+        alerts: savedAlerts,
+        suppressed: alerts.length - savedAlerts.length,
         currentErrorRate,
         previousErrorRate
       };
@@ -162,7 +149,7 @@ class SmartAlertEngine {
     this.lastAlertTime['ERROR_SPIKE'] = Date.now();
 
     return {
-      id: `alert_${Date.now()}_spike`,
+      alertId: `alert_${Date.now()}_spike`,
       type: 'ERROR_SPIKE',
       severity: 'HIGH',
       title: `⚠️ Error Rate Spike Detected (+${increase}%)`,
@@ -176,7 +163,6 @@ class SmartAlertEngine {
         'Check external service status',
         'Consider rollback if errors persist'
       ],
-      timestamp: new Date(),
       status: 'active'
     };
   }
@@ -187,13 +173,14 @@ class SmartAlertEngine {
     this.lastAlertTime['CRITICAL_ENDPOINT'] = Date.now();
 
     return {
-      id: `alert_${Date.now()}_endpoint`,
+      alertId: `alert_${Date.now()}_endpoint`,
       type: 'CRITICAL_ENDPOINT_FAILURE',
       severity: 'CRITICAL',
       title: `🚨 Critical Endpoint Failure`,
       description: `${criticalFailures.length} failures on business-critical endpoints: ${endpoints.join(', ')}`,
       affectedEndpoints: endpoints,
       affectedUsers: new Set(criticalFailures.map(log => log.userId)).size,
+      affectedLogs: criticalFailures.length,
       topErrors: this.getTopErrors(criticalFailures),
       suggestedAction: 'IMMEDIATE ACTION REQUIRED - Revenue-impacting',
       runbook: [
@@ -202,7 +189,6 @@ class SmartAlertEngine {
         'Enable backup systems if available',
         'Notify customer support team'
       ],
-      timestamp: new Date(),
       status: 'active'
     };
   }
@@ -211,13 +197,14 @@ class SmartAlertEngine {
     this.lastAlertTime['HIGH_VALUE_ERROR'] = Date.now();
 
     return {
-      id: `alert_${Date.now()}_highvalue`,
+      alertId: `alert_${Date.now()}_highvalue`,
       type: 'HIGH_VALUE_ERROR',
       severity: 'HIGH',
       title: `💰 Critical Error Code Detected`,
       description: `${highValueErrors.length} occurrences of business-critical errors`,
       topErrors: this.getTopErrors(highValueErrors),
       affectedUsers: new Set(highValueErrors.map(log => log.userId)).size,
+      affectedLogs: highValueErrors.length,
       suggestedAction: 'Review payment/auth systems immediately',
       runbook: [
         'Check payment gateway connectivity',
@@ -225,7 +212,6 @@ class SmartAlertEngine {
         'Check authentication service health',
         'Consider enabling circuit breaker'
       ],
-      timestamp: new Date(),
       status: 'active'
     };
   }
@@ -234,12 +220,13 @@ class SmartAlertEngine {
     this.lastAlertTime['HIGH_IMPACT'] = Date.now();
 
     return {
-      id: `alert_${Date.now()}_impact`,
+      alertId: `alert_${Date.now()}_impact`,
       type: 'HIGH_USER_IMPACT',
       severity: 'HIGH',
       title: `👥 Multiple Users Affected: ${affectedUsers} users`,
       description: `${errorLogs.length} errors affecting ${affectedUsers} unique users`,
       affectedUsers,
+      affectedLogs: errorLogs.length,
       topErrors: this.getTopErrors(errorLogs),
       estimatedRevenueLoss: `$${(affectedUsers * 50).toFixed(2)}`,
       suggestedAction: 'High user impact - prioritize resolution',
@@ -249,7 +236,6 @@ class SmartAlertEngine {
         'Fix underlying issue ASAP',
         'Consider compensation for affected users'
       ],
-      timestamp: new Date(),
       status: 'active'
     };
   }
@@ -267,26 +253,104 @@ class SmartAlertEngine {
       .map(([error, count]) => ({ error, count }));
   }
 
-  getRecentAlerts(limit = 10) {
-    return this.recentAlerts.slice(0, limit);
+  // CHANGED: Get alerts from MongoDB for last 24 hours
+  async getRecentAlerts(limit = 100, hours = 24) {
+    try {
+      const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
+      
+      const alerts = await Alert.find({
+        createdAt: { $gte: cutoffTime }
+      })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .lean();
+
+      return alerts;
+    } catch (error) {
+      console.error('❌ Error fetching recent alerts:', error);
+      return [];
+    }
   }
 
-  acknowledgeAlert(alertId) {
-    const alert = this.recentAlerts.find(a => a.id === alertId);
-    if (alert) {
-      alert.status = 'acknowledged';
-      alert.acknowledgedAt = new Date();
+  // CHANGED: Acknowledge alert in MongoDB
+  async acknowledgeAlert(alertId) {
+    try {
+      const alert = await Alert.findOneAndUpdate(
+        { alertId },
+        {
+          status: 'acknowledged',
+          acknowledgedAt: new Date()
+        },
+        { new: true }
+      );
+      
+      return alert;
+    } catch (error) {
+      console.error('❌ Error acknowledging alert:', error);
+      return null;
     }
-    return alert;
   }
 
-  resolveAlert(alertId) {
-    const alert = this.recentAlerts.find(a => a.id === alertId);
-    if (alert) {
-      alert.status = 'resolved';
-      alert.resolvedAt = new Date();
+  // CHANGED: Resolve alert in MongoDB
+  async resolveAlert(alertId) {
+    try {
+      const alert = await Alert.findOneAndUpdate(
+        { alertId },
+        {
+          status: 'resolved',
+          resolvedAt: new Date()
+        },
+        { new: true }
+      );
+      
+      return alert;
+    } catch (error) {
+      console.error('❌ Error resolving alert:', error);
+      return null;
     }
-    return alert;
+  }
+
+  // NEW: Get alert statistics
+  async getAlertStats(hours = 24) {
+    try {
+      const cutoffTime = new Date(Date.now() - hours * 60 * 60 * 1000);
+      
+      const stats = await Alert.aggregate([
+        {
+          $match: {
+            createdAt: { $gte: cutoffTime }
+          }
+        },
+        {
+          $group: {
+            _id: '$type',
+            count: { $sum: 1 },
+            activeCoun: {
+              $sum: { $cond: [{ $eq: ['$status', 'active'] }, 1, 0] }
+            }
+          }
+        }
+      ]);
+
+      const total = await Alert.countDocuments({
+        createdAt: { $gte: cutoffTime }
+      });
+
+      const active = await Alert.countDocuments({
+        createdAt: { $gte: cutoffTime },
+        status: 'active'
+      });
+
+      return {
+        total,
+        active,
+        byType: stats,
+        timeRange: `Last ${hours} hours`
+      };
+    } catch (error) {
+      console.error('❌ Error getting alert stats:', error);
+      return null;
+    }
   }
 }
 

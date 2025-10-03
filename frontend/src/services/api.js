@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://log-backend-73yn.onrender.com/api';
+const API_BASE_URL = 'https://log-analyzer1.onrender.com/api';
 
 // Create axios instance with default config
 const api = axios.create({
@@ -62,6 +62,59 @@ export const logAPI = {
   // Get queue stats
   getQueueStats: async () => {
     const response = await api.get('/logs/queue/stats');
+    return response.data;
+  },
+};
+
+// === Smart Alerts APIs ===
+export const alertAPI = {
+  // Get all alerts (last 24 hours by default)
+  getAlerts: async (hours = 24, limit = 100) => {
+    const response = await api.get('/alerts', {
+      params: { hours, limit }
+    });
+    return response.data;
+  },
+
+  // Get only active alerts
+  getActiveAlerts: async (hours = 24) => {
+    const response = await api.get('/alerts/active', {
+      params: { hours }
+    });
+    return response.data;
+  },
+
+  // Get alert statistics
+  getAlertStats: async (hours = 24) => {
+    const response = await api.get('/alerts/stats', {
+      params: { hours }
+    });
+    return response.data;
+  },
+
+  // Manually trigger alert evaluation
+  evaluateAlerts: async () => {
+    const response = await api.post('/alerts/evaluate');
+    return response.data;
+  },
+
+  // Acknowledge an alert
+  acknowledgeAlert: async (alertId) => {
+    const response = await api.post(`/alerts/${alertId}/acknowledge`);
+    return response.data;
+  },
+
+  // Resolve an alert
+  resolveAlert: async (alertId) => {
+    const response = await api.post(`/alerts/${alertId}/resolve`);
+    return response.data;
+  },
+
+  // Get alerts by type
+  getAlertsByType: async (type, hours = 24) => {
+    const response = await api.get(`/alerts/type/${type}`, {
+      params: { hours }
+    });
     return response.data;
   },
 };

@@ -7,8 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Backend URL where logs will be sent
-const LOG_BACKEND_URL = 'https://log-backend-73yn.onrender.com/api/logs';
-const BATCH_LOG_URL = 'https://log-backend-73yn.onrender.com/api/logs/batch';
+const LOG_BACKEND_URL = 'http://localhost:5000/api/logs';
+const BATCH_LOG_URL = 'http://localhost:5000/api/logs/batch';
 
 // Middleware
 app.use(cors());

@@ -771,10 +771,10 @@ docker-compose up -d
 
 ## 🤝 Team Ananta
 
-| Member              | Role               | Contribution                |
-| ------------------- | ------------------ | --------------------------- |
-| **Suvit Kumar**     | AI/ML              | Backend, AI Integration     |
-| **[Kriti Mahajan]** | Frontend Developer | Frontend, Backend, AI UI/UX |
+| Member            | Role               | Contribution                |
+| ----------------- | ------------------ | --------------------------- |
+| **Suvit Kumar**   | AI/ML              | Backend, AI Integration     |
+| **Kriti Mahajan** | Frontend Developer | Frontend, Backend, AI UI/UX |
 
 ---
 
@@ -799,7 +799,7 @@ MIT License - See [LICENSE](LICENSE) file for details
 - 📧 **Email:** suvitkumar03@gmail.com
 - 🐛 **Issues:** [GitHub Issues](https://github.com/SuvitKumar003/Team--Ananta-/issues)
 - 🌐 **Linkedin Suvit Kumar:** [Linkedin Suvit](https://www.linkedin.com/in/suvitkumar03/)
-- 🌐 **Linkedin Kriti Mahajan:** [Linkedin Krit](https://www.linkedin.com/in/kritimjn09/)
+- 🌐 **Linkedin Kriti Mahajan:** [Linkedin Kriti](https://www.linkedin.com/in/kritimjn09/)
 
 ---
 

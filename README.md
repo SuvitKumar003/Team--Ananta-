@@ -8,7 +8,7 @@
 
 **The next generation of log analysis - powered by Cerebras LLaMA 4 AI**
 
-[🎥 Live Demo](#-live-demo) • [📖 Documentation](#-table-of-contents) • [🚀 Quick Start](#-quick-start) • [💡 Features](#-features)
+[🎥 Live Demo](#-https://log-analyzer-full-stack.onrender.com) • [📖 Documentation](#-table-of-contents) • [🚀 Quick Start](#-quick-start) • [💡 Features](#-features)
 
 ✨ “Built with speed from Cerebras, intelligence from LLaMA, and portability from Docker — our project is fast, smart, and easy to use anywhere.”
 
@@ -629,10 +629,10 @@ Response: {
 ## 📸 Screenshots
 
 ### 1. Dashboard - Real-time Insights
+
 <img width="1873" height="913" alt="Screenshot 2025-10-03 231754" src="https://github.com/user-attachments/assets/d88b9343-b991-416c-ad66-8b2507b52202" />
 
 <img width="1003" height="928" alt="Screenshot 2025-10-03 231957" src="https://github.com/user-attachments/assets/34966fa4-c81f-426e-9eea-ec83c8970f46" />
-
 
 - Live statistics cards
 - Severity distribution chart
@@ -640,6 +640,7 @@ Response: {
 - Critical issues table
 
 ### 2. AI LLAMA chat - Conversational Search
+
 <img width="1229" height="919" alt="Screenshot 2025-10-03 232239" src="https://github.com/user-attachments/assets/ea5937e8-b7ad-4d91-af74-1b85bbfd861c" />
 - Natural language input
 - AI-powered responses
@@ -647,6 +648,7 @@ Response: {
 - Relevant log preview
 
 ### 3. Smart Alerts - Proactive Monitoring
+
 <img width="1617" height="929" alt="Screenshot 2025-10-03 232152" src="https://github.com/user-attachments/assets/5b12bceb-725c-457b-88e5-d68fd561b516" />
 - Alert cards with severity
 - One-click acknowledge/resolve
@@ -654,6 +656,7 @@ Response: {
 - User impact metrics
 
 ### 4. Log Insights - Deep Dive Analysis
+
 <img width="1203" height="918" alt="Screenshot 2025-10-03 232207" src="https://github.com/user-attachments/assets/ad95b8a8-2879-46f7-a486-6228a83778c4" />
 
 - Top error patterns
@@ -802,12 +805,10 @@ docker-compose up -d
 
 ## 🤝 Team Ananta
 
-| Member          | Role               | Contribution                          |
-| --------------- | ------------------ | ------------------------------------- |
-| **Suvit Kumar** | Full Stack Lead    | Architecture, Backend, AI Integration |
-| **[Member 2]**  | Frontend Developer | React components, UI/UX               |
-| **[Member 3]**  | DevOps Engineer    | Deployment, monitoring                |
-| **[Member 4]**  | AI/ML Engineer     | Model fine-tuning, prompts            |
+| Member              | Role               | Contribution                |
+| ------------------- | ------------------ | --------------------------- |
+| **Suvit Kumar**     | AI/ML              | Backend, AI Integration     |
+| **[Kriti Mahajan]** | Frontend Developer | Frontend, Backend, AI UI/UX |
 
 ---
 
@@ -829,11 +830,10 @@ MIT License - See [LICENSE](LICENSE) file for details
 
 ## 📞 Contact & Support
 
-- 📧 **Email:** team.ananta@example.com
+- 📧 **Email:** suvitkumar03@gmail.com
 - 🐛 **Issues:** [GitHub Issues](https://github.com/SuvitKumar003/Team--Ananta-/issues)
-- 💬 **Discord:** [Join our community](#)
-- 🌐 **Website:** [ananta.dev](#)
-- 📖 **Docs:** [docs.ananta.dev](#)
+- 🌐 **Linkedin Suvit Kumar:** (https://www.linkedin.com/in/suvitkumar03/)
+- 🌐 **Linkedin Kriti Mahajan:** (https://www.linkedin.com/in/kritimjn09/)
 
 ---
 

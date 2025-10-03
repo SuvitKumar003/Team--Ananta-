@@ -57,7 +57,6 @@
 10. [Screenshots](#-screenshots)
 11. [Performance](#-performance-benchmarks)
 12. [Deployment](#-deployment)
-13. [Future Roadmap](#-future-roadmap)
 
 ---
 
@@ -799,8 +798,8 @@ MIT License - See [LICENSE](LICENSE) file for details
 
 - 📧 **Email:** suvitkumar03@gmail.com
 - 🐛 **Issues:** [GitHub Issues](https://github.com/SuvitKumar003/Team--Ananta-/issues)
-- 🌐 **Linkedin Suvit Kumar:** (https://www.linkedin.com/in/suvitkumar03/)
-- 🌐 **Linkedin Kriti Mahajan:** (https://www.linkedin.com/in/kritimjn09/)
+- 🌐 **Linkedin Suvit Kumar:** [Linkedin Suvit](#-https://www.linkedin.com/in/suvitkumar03/)
+- 🌐 **Linkedin Kriti Mahajan:** [Linkedin Krit](#-https://www.linkedin.com/in/kritimjn09/)
 
 ---
 

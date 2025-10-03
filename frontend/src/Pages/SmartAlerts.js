@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './SmartAlerts.css';
 
-const API_BASE = 'https://log-analyzer1.onrender.com/api';
+const API_BASE = 'http://localhost:5000/api';
 
 const SmartAlerts = () => {
   const [alerts, setAlerts] = useState([]);

@@ -111,22 +111,22 @@ Ananta: "Payments are failing due to gateway timeouts. 47 users
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         FRONTEND (React)                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
-│  │  Dashboard   │  │  AI LLAMA chat  │  │ Smart Alerts │              │
-│  │  (Stats)     │  │  (Chat)      │  │  (Timeline)  │              │
-│  └──────────────┘  └──────────────┘  └──────────────┘              │
+│                         FRONTEND (React)                            │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐               │
+│  │  Dashboard   │  │  AI LLAMA chat  │ Smart Alerts │               │
+│  │  (Stats)     │  │  (Chat)      │  │  (Timeline)  │               │
+│  └──────────────┘  └──────────────┘  └──────────────┘               │
 └────────────────────────────┬────────────────────────────────────────┘
                              │ REST API (axios)
                              ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    EXPRESS.JS BACKEND                                │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                │
-│  │ Log Routes  │  │ AI Routes   │  │Alert Routes │                │
-│  │ /api/logs   │  │ /api/ai     │  │/api/alerts  │                │
-│  └─────────────┘  └─────────────┘  └─────────────┘                │
-│                                                                      │
-│  Security: Helmet, Rate Limiting (10k req/min), CORS               │
+│                    EXPRESS.JS BACKEND                               │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐                  │
+│  │ Log Routes  │  │ AI Routes   │  │Alert Routes │                  │
+│  │ /api/logs   │  │ /api/ai     │  │/api/alerts  │                  │
+│  └─────────────┘  └─────────────┘  └─────────────┘                  │
+│                                                                     │
+│  Security: Helmet, Rate Limiting (10k req/min), CORS                │
 └────────────────────────────┬────────────────────────────────────────┘
                              │
                     ┌────────┴────────┐

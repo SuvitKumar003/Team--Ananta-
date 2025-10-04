@@ -8,10 +8,10 @@ const CEREBRAS_API_URL = 'https://api.cerebras.ai/v1/chat/completions';
 
 /**
  * AI-Powered Natural Language Log Search
- * This is the MAIN function that powers the AI Copilot Chat
+ * This is the MAIN function that powers the AI Chat
  */
 async function aiLogSearch(userQuery, timeRange = 24) {
-  console.log(`🔍 AI Copilot Search: "${userQuery}"`);
+  console.log(`🔍 AI Search: "${userQuery}"`);
 
   try {
     // Step 1: Get recent logs (last 24 hours by default)

@@ -10,7 +10,7 @@ const Navbar = () => {
     { path: "/dashboard", label: "Stats" },
     { path: "/alerts", label: "Alerts" },
     { path: "/insights", label: "Logs Insights" }, 
-        { path: "/copilot", label: "Chat with Logs" }, // ← ADD THIS
+        { path: "/chatbot", label: "Chat with Logs" }, // ← ADD THIS
 
   ];
 

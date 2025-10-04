@@ -1,0 +1,59 @@
+services:
+  # Backend API
+  - type: web
+    name: log-analyzer-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false  # Add this manually in Render dashboard
+      - key: REDIS_HOST
+        fromService:
+          name: redis
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          name: redis
+          type: redis
+          property: port
+      - key: CEREBRAS_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+    healthCheckPath: /health
+
+  # Frontend
+  - type: web
+    name: log-analyzer-frontend
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://log-analyzer-backend.onrender.com/api
+
+  # Sample App (Log Generator)
+  - type: web
+    name: log-generator-sample-app
+    runtime: docker
+    dockerfilePath: ./sample-app/Dockerfile
+    dockerContext: ./sample-app
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: LOG_BACKEND_URL
+        value: https://log-analyzer-backend.onrender.com/api/logs
+      - key: BATCH_LOG_URL
+        value: https://log-analyzer-backend.onrender.com/api/logs/batch
+
+  # Redis
+  - type: redis
+    name: redis
+    ipAllowList: []
+    plan: free

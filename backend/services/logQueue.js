@@ -4,9 +4,9 @@ const Log = require('../models/Log');
 // Create a queue for processing logs
 const logQueue = new Queue('log-processing', {
   redis: {
-    host: '127.0.0.1',
-    port: 6379
-  },
+  host: process.env.REDIS_HOST || 'redis',
+  port: process.env.REDIS_PORT || 6379
+},
   settings: {
     maxStalledCount: 3, // Retry failed jobs 3 times
     lockDuration: 30000, // Lock for 30 seconds

@@ -6,9 +6,9 @@ const axios = require('axios');
 // Create AI analysis queue
 const aiAnalysisQueue = new Queue('ai-analysis', {
   redis: {
-    host: '127.0.0.1',
-    port: 6379
-  },
+  host: process.env.REDIS_HOST || 'redis',
+  port: process.env.REDIS_PORT || 6379
+},
   settings: {
     maxStalledCount: 2,
     lockDuration: 120000, // 2 minutes (AI calls can be slow)

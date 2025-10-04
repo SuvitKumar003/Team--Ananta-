@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const axios = require('axios'); // Add this dependency
-require('dotenv').config();
+// require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

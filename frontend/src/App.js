@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/copilot" element={<Copilot />} /> {/* ← ADD THIS */}
+        <Route path="/chatbot" element={<Copilot />} /> {/* ← ADD THIS */}
         <Route path="/clusters" element={<Clusters />} />
         <Route path="/live" element={<LiveFeed />} />
         <Route path="/reports" element={<Reports />} />

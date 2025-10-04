@@ -9,9 +9,8 @@ const Navbar = () => {
     { path: "/", label: "Home" },
     { path: "/dashboard", label: "Stats" },
     { path: "/alerts", label: "Alerts" },
-    { path: "/insights", label: "Logs Insights" }, 
-        { path: "/copilot", label: "Chat with Logs" }, // ← ADD THIS
-
+    { path: "/insights", label: "Logs Insights" },
+    { path: "/chatbot", label: "Chat with Logs" }, // ← ADD THIS
   ];
 
   return (

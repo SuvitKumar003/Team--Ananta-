@@ -101,27 +101,22 @@ detects anomalies before users notice, and cuts incident response time by 95%.
 ---
 ---
 
-## 📸 Screenshots
-
+📸 Screenshots (Collapsed Alternative)
+<details>
+<summary>🖼️ <b>Click to view all screenshots</b></summary>
 <div align="center">
-
-### 🏠 Home - Command Center
-<img width="1873" height="913" alt="Screenshot 2025-10-03 231754" src="https://github.com/user-attachments/assets/6065dbae-146a-46b2-a319-8224b55a189a" />
-
-
-### 📊 Dashboard - Real-time Intelligence
-<img width="1003" height="928" alt="Screenshot 2025-10-03 231957" src="https://github.com/user-attachments/assets/2aabbe76-4fa2-4774-88bc-5da8c0c146a5" />
-
-### 🧠 AI Insights - Deep Analysis
-<img width="1203" height="918" alt="Screenshot 2025-10-03 232207" src="https://github.com/user-attachments/assets/f97974b1-acfe-4130-b7ae-7b6fd5b647a0" />
-
-### 💬 LLama Chat - Natural Language Search
-<img width="1229" height="919" alt="Screenshot 2025-10-03 232239" src="https://github.com/user-attachments/assets/752be898-dbd7-4fca-b05d-3bc7a6ed90b8" />
-
-### 🔔 Smart Alerts - Stay Ahead
-<img width="1617" height="929" alt="Screenshot 2025-10-03 232152" src="https://github.com/user-attachments/assets/ddc9ac09-0e06-43b4-a592-43eb56b43eba" />
-
+🏠 Home - Command Center
+<img width="700" alt="Screenshot 2025-10-03 231754" src="https://github.com/user-attachments/assets/6065dbae-146a-46b2-a319-8224b55a189a" />
+📊 Dashboard - Real-time Intelligence
+<img width="700" alt="Screenshot 2025-10-03 231957" src="https://github.com/user-attachments/assets/2aabbe76-4fa2-4774-88bc-5da8c0c146a5" />
+🧠 AI Insights - Deep Analysis
+<img width="700" alt="Screenshot 2025-10-03 232207" src="https://github.com/user-attachments/assets/f97974b1-acfe-4130-b7ae-7b6fd5b647a0" />
+💬 LLama Chat - Natural Language Search
+<img width="700" alt="Screenshot 2025-10-03 232239" src="https://github.com/user-attachments/assets/752be898-dbd7-4fca-b05d-3bc7a6ed90b8" />
+🔔 Smart Alerts - Stay Ahead
+<img width="700" alt="Screenshot 2025-10-03 232152" src="https://github.com/user-attachments/assets/ddc9ac09-0e06-43b4-a592-43eb56b43eba" />
 </div>
+</details>
 
 ---
 

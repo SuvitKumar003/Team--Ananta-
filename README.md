@@ -6,8 +6,7 @@
 **Stop firefighting. Start preventing.** Our AI analyzes 20,000+ logs per minute,  
 detects anomalies before users notice, and cuts incident response time by 95%.
 
-[🌐 Live Demo](https://log-analyzer-full-stack.onrender.com) • [📖 Demo video]()
-
+[![🎥 Watch Demo](https://img.shields.io/badge/▶️_Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1ZZss8D8ahgTyVSdfeyhFrOlJQcXaWzLl/view?usp=sharing)
 <br/>
 
 </div>
@@ -68,41 +67,33 @@ detects anomalies before users notice, and cuts incident response time by 95%.
 | **🎯 Clustering** | Groups similar errors into smart clusters | **6 clusters**, **85% faster** diagnosis |
 | **🐳 Docker** | Fully containerized with docker-compose | **10-second** cold start |
 
-</div>
-🧠 Powered by Cerebras AI
+# 🧠 Powered by **Cerebras AI**
+
 <div align="center">
-🚀 Cerebras LLaMA-4 Scout 17B Engine
-🧩 Attribute	⚙️ Details
-🎯 Model	LLaMA 4 Scout 17B (16e-instruct)
-⚡ Inference Speed	< 2 seconds per analysis
-🧠 Parameters	17 Billion
-📊 Context Window	8,000 tokens
-🔥 Training Objective	Optimized for log analysis & real-time insight
-✨ AI Capabilities
 
-🚨 Real-time Anomaly Detection
+## 🚀 **Cerebras LLaMA-4 Scout 17B Engine**
 
-🧩 Smart Error Clustering
+| 🧩 **Attribute** | ⚙️ **Details** |
+|------------------|----------------|
+| 🎯 **Model** | LLaMA 4 Scout 17B (16e-instruct) |
+| ⚡ **Inference Speed** | < 2 seconds per analysis |
+| 🧠 **Parameters** | 17 Billion |
+| 📊 **Context Window** | 8,000 tokens |
+| 🔥 **Training Objective** | Optimized for log analysis & real-time insight |
 
-🔍 Root Cause Identification
+## ✨ **AI Capabilities**
 
-💬 Natural Language Understanding
+| Capability | Description |
+|------------|-------------|
+| 🚨 **Real-time Anomaly Detection** | Identifies unusual patterns and anomalies in real-time |
+| 🧩 **Smart Error Clustering** | Groups related errors for efficient troubleshooting |
+| 🔍 **Root Cause Identification** | Pinpoints the underlying causes of issues |
+| 💬 **Natural Language Understanding** | Interprets queries and logs in natural language |
+| 🔮 **Predictive Alerting** | Provides early warnings and predictive insights |
 
-🔮 Predictive Alerting & Early Warnings
+---
 
-⚙️ Powered by Cerebras Systems — Delivering next-generation AI performance for scalable, real-time analytics.
-
-</div>
-
-### 🎯 AI in Action
-
-| Feature | What It Does | Result |
-|:--------|:-------------|:-------|
-| **Anomaly Detection** | Analyzes 500 logs in parallel | **47 anomalies** detected |
-| **Smart Clustering** | Groups similar errors | **6 clusters** created |
-| **Root Cause** | Deep pattern analysis | Instant explanations |
-| **Natural Chat** | Understands plain English | **<2s** responses |
-| **Predictive Alerts** | Learns error patterns | **+67% spike** caught early |
+*⚙️ Powered by Cerebras Systems — Delivering next-generation AI performance for scalable, real-time analytics.*
 
 </div>
 

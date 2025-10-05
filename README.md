@@ -79,19 +79,20 @@ detects anomalies before users notice, and cuts incident response time by 95%.
 <div align="center">
 
 ### 🏠 Home - Command Center
-![Home](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 231754.png)
+<img width="1873" height="913" alt="Screenshot 2025-10-03 231754" src="https://github.com/user-attachments/assets/6065dbae-146a-46b2-a319-8224b55a189a" />
+
 
 ### 📊 Dashboard - Real-time Intelligence
-![Dashboard](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 231957.png)
+<img width="1003" height="928" alt="Screenshot 2025-10-03 231957" src="https://github.com/user-attachments/assets/2aabbe76-4fa2-4774-88bc-5da8c0c146a5" />
 
 ### 🧠 AI Insights - Deep Analysis
-![AI Insights](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 232207.png)
+<img width="1203" height="918" alt="Screenshot 2025-10-03 232207" src="https://github.com/user-attachments/assets/f97974b1-acfe-4130-b7ae-7b6fd5b647a0" />
 
 ### 💬 LLama Chat - Natural Language Search
-![Chat](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 232239.png)
+<img width="1229" height="919" alt="Screenshot 2025-10-03 232239" src="https://github.com/user-attachments/assets/752be898-dbd7-4fca-b05d-3bc7a6ed90b8" />
 
 ### 🔔 Smart Alerts - Stay Ahead
-![Alerts](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 232152.png)
+<img width="1617" height="929" alt="Screenshot 2025-10-03 232152" src="https://github.com/user-attachments/assets/ddc9ac09-0e06-43b4-a592-43eb56b43eba" />
 
 </div>
 
@@ -143,6 +144,49 @@ graph TB
 ```
 
 **Tech Stack:** React • Node.js • MongoDB • Redis • Docker • Cerebras LLaMA 4
+
+</div>
+
+---
+## 🎓 How It Works
+
+<div align="center">
+
+```
+╔════════════════════════════════════════════════════════════════╗
+║                    REAL-TIME LOG PIPELINE                      ║
+╚════════════════════════════════════════════════════════════════╝
+
+          ┌─────────────────────────────────────┐
+          │   📥 LOG INGESTION (20K/min)       │
+          │   Express API → Redis Queue        │
+          │   → MongoDB Storage                │
+          └─────────────────────────────────────┘
+                        ↓ Every 2 minutes
+          ┌─────────────────────────────────────┐
+          │   🧠 AI ANALYSIS                   │
+          │   Cerebras LLaMA 4 Scout 17B       │
+          │   ├── Anomaly Detection (0-100%)   │
+          │   ├── Smart Clustering (6 groups)  │
+          │   ├── Root Cause Analysis          │
+          │   └── Suggested Fixes              │
+          └─────────────────────────────────────┘
+                        ↓ Every 5 minutes
+          ┌─────────────────────────────────────┐
+          │   🔔 SMART ALERTS                  │
+          │   4 AI-Powered Rules:              │
+          │   ├── Error Rate Spike (+67%)      │
+          │   ├── Critical Endpoints (/payment)│
+          │   ├── High-Value Errors (GATEWAY)  │
+          │   └── Multi-User Impact (23 users) │
+          └─────────────────────────────────────┘
+                        ↓ Real-time
+          ┌─────────────────────────────────────┐
+          │   ⚛️ REACT FRONTEND                │
+          │   Dashboard • Insights • Chat      │
+          │   Alerts • Auto-refresh (30s)      │
+          └─────────────────────────────────────┘
+```
 
 </div>
 

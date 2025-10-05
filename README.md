@@ -18,7 +18,7 @@ detects anomalies before users notice, and cuts incident response time by 95%.
 
 ## 💥 The Problem vs Our Solution
 
-<table>
+<table align="center">>
 <tr>
 <td width="50%" align="center">
 

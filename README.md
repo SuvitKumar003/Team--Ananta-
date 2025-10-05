@@ -6,11 +6,9 @@
 **Stop firefighting. Start preventing.** Our AI analyzes 20,000+ logs per minute,  
 detects anomalies before users notice, and cuts incident response time by 95%.
 
-[🌐 Live Demo](https://log-analyzer-full-stack.onrender.com) • [📖 Documentation](#-quick-start-with-docker)
+[🌐 Live Demo](https://log-analyzer-full-stack.onrender.com) • [📖 Demo video]()
 
 <br/>
-
-![Dashboard Preview](d:\OneDrive\Pictures\Screenshots\Screenshot 2025-10-03 231957.png)
 
 </div>
 
@@ -71,30 +69,30 @@ detects anomalies before users notice, and cuts incident response time by 95%.
 | **🐳 Docker** | Fully containerized with docker-compose | **10-second** cold start |
 
 </div>
-## 🧠 Powered by Cerebras AI
-
+🧠 Powered by Cerebras AI
 <div align="center">
+🚀 Cerebras LLaMA-4 Scout 17B Engine
+🧩 Attribute	⚙️ Details
+🎯 Model	LLaMA 4 Scout 17B (16e-instruct)
+⚡ Inference Speed	< 2 seconds per analysis
+🧠 Parameters	17 Billion
+📊 Context Window	8,000 tokens
+🔥 Training Objective	Optimized for log analysis & real-time insight
+✨ AI Capabilities
 
-```
-╔═══════════════════════════════════════════════════════════╗
-║           🚀 CEREBRAS LLAMA 4 SCOUT 17B ENGINE           ║
-╠═══════════════════════════════════════════════════════════╣
-║                                                           ║
-║  🎯 Model:             LLaMA 4 Scout 17B (16e-instruct)  ║
-║  ⚡ Speed:             <2 seconds per analysis            ║
-║  🧠 Parameters:        17 Billion                         ║
-║  📊 Context:           8,000 tokens                       ║
-║  🔥 Training:          Optimized for log analysis         ║
-║                                                           ║
-║  ✨ AI Capabilities:                                       ║
-║  ├─ Real-time anomaly detection                          ║
-║  ├─ Smart error clustering                               ║
-║  ├─ Root cause identification                            ║
-║  ├─ Natural language understanding                       ║
-║  └─ Predictive alerting                                  ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-```
+🚨 Real-time Anomaly Detection
+
+🧩 Smart Error Clustering
+
+🔍 Root Cause Identification
+
+💬 Natural Language Understanding
+
+🔮 Predictive Alerting & Early Warnings
+
+⚙️ Powered by Cerebras Systems — Delivering next-generation AI performance for scalable, real-time analytics.
+
+</div>
 
 ### 🎯 AI in Action
 

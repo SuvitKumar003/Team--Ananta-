@@ -7,7 +7,7 @@
 detects anomalies before users notice, and cuts incident response time by 95%.
 
 [![🌐 Live Demo](https://img.shields.io/badge/🚀_Live_Demo-0078D4?style=for-the-badge&logo=microsoft-edge&logoColor=white)](https://log-analyzer-full-stack.onrender.com)
-[🎥 Watch Demo](https://img.shields.io/badge/▶️_Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1ZZss8D8ahgTyVSdfeyhFrOlJQcXaWzLl/view?usp=sharing)
+[![🎥 Watch Demo](https://img.shields.io/badge/▶️_Watch_Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://drive.google.com/file/d/1ZZss8D8ahgTyVSdfeyhFrOlJQcXaWzLl/view?usp=sharing)
 <br/>
 
 </div>

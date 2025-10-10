@@ -21,9 +21,6 @@ const Home = () => {
             <Link to="/dashboard" className="cta-button primary">
               Open Dashboard
             </Link>
-            <Link to="/live" className="cta-button secondary">
-              View Live Feed
-            </Link>
           </div>
         </div>
 
